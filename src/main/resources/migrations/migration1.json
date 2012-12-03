@@ -1,0 +1,20 @@
+{
+    "topic_types": [
+        {
+            "value": "Tag",
+            "uri": "dm4.tags.tag",
+            "data_type_uri": "dm4.core.text", 
+            "index_mode_uris": ["dm4.core.fulltext", "dm4.core.key"],
+            "view_config_topics": [
+                {
+                    "type_uri": "dm4.webclient.view_config",
+                    "composite": {
+                        "dm4.webclient.add_to_create_menu": false,
+                        "dm4.webclient.is_searchable_unit": true,
+                        "dm4.webclient.rows": 1
+                    }
+                }
+            ]
+        }
+    ]
+}
