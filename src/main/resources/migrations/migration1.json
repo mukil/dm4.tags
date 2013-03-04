@@ -1,17 +1,59 @@
 {
     "topic_types": [
         {
-            "value": "Tag",
-            "uri": "dm4.tags.tag",
-            "data_type_uri": "dm4.core.text", 
+            "value": "Label",
+            "uri": "dm4.tags.label",
+            "data_type_uri": "dm4.core.text",
             "index_mode_uris": ["dm4.core.fulltext", "dm4.core.key"],
             "view_config_topics": [
                 {
                     "type_uri": "dm4.webclient.view_config",
                     "composite": {
                         "dm4.webclient.add_to_create_menu": false,
-                        "dm4.webclient.is_searchable_unit": true,
+                        "dm4.webclient.is_searchable_unit": false,
                         "dm4.webclient.rows": 1
+                    }
+                }
+            ]
+        },
+        {
+            "value": "Definition",
+            "uri": "dm4.tags.definition",
+            "data_type_uri": "dm4.core.text",
+            "index_mode_uris": ["dm4.core.fulltext"],
+            "view_config_topics": [
+                {
+                    "type_uri": "dm4.webclient.view_config",
+                    "composite": {
+                        "dm4.webclient.add_to_create_menu": false,
+                        "dm4.webclient.is_searchable_unit": false,
+                        "dm4.webclient.input_field_rows": 3
+                    }
+                }
+            ]
+        },
+        {
+            "value": "Tag",
+            "uri": "dm4.tags.tag",
+            "data_type_uri": "dm4.core.composite",
+            "assoc_defs": [
+                {
+                    "child_type_uri":           "dm4.tags.label",
+                    "child_cardinality_uri":    "dm4.core.one",
+                    "assoc_type_uri":           "dm4.core.composition_def"
+                },
+                {
+                    "child_type_uri":           "dm4.tags.definition",
+                    "child_cardinality_uri":    "dm4.core.one",
+                    "assoc_type_uri":           "dm4.core.composition_def"
+                }
+            ], "view_config_topics": [
+                {
+                    "type_uri": "dm4.webclient.view_config",
+                    "composite": {
+                        "dm4.webclient.icon": "/de.deepamehta.tags/images/tag_32.png",
+                        "dm4.webclient.add_to_create_menu": true,
+                        "dm4.webclient.is_searchable_unit": true
                     }
                 }
             ]

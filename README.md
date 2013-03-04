@@ -1,4 +1,4 @@
-# DeepaMehta Tags Module
+# DeepaMehta 4 Tags Module
 
 A module for users who want to interactively extend a DeepaMehta 4 _Topic_- resp. _Association Type_ of their choice about _one_ or _many_ simple `Tag` field/s. 
 
@@ -6,13 +6,13 @@ The sole use of making this an extra module is, we want to make it clear how to 
 
 This plugins was solely developed for backwards compatibility reasons, to simulare hierarchical structures like those known from file-systems or browser bookmarks ("reasons of familiarity for internet users who joined the network after the millenium"). It maybe useless very soon and it's sole existence remains to be discussed. At the same time it's an hommage to the first human being leaving a hand-mark made out of natural purpur-color on the surface stone over 30 thousand years ago, the earliest `tag` known to humankind[unknown source] expressing `i was here` by tagging the stone.
 
-# Install Tags for DeepaMehta 4
+# Install Tags Module for DeepaMehta 4
 
 Download the DeepaMehta Tagging 1.0 Bundle. A [download is provided here](https://github.com/downloads/mukil/dm4.tags/deepamehta-tags-1.0.jar) in this repository, also filed under `Downloads`.
 
 Place the downloaded file `deepamehta-tags-1.0.jar` in the `bundles` folder of your deepamehta installation and restart DeepaMehta.
 
-# Configure Tags for DeepaMehta 4 interactively
+# Configure Tags Module for DeepaMehta 4 interactively
 
 Before you are able to start **using** `Tags` you must accomplish the following, non-trivial task of telling your DeepaMehta installation what exactly is going to be tagged and if it will be tagged with just one or with many tags.
 
@@ -24,7 +24,8 @@ Whe you've selected the blue _Topic Type_ called `Web Resource` you additionally
 
 An `Aggregation Definition` is just the expression for: "one single tag can be _part_ of one or many web resources without being deleted when the web resource is deleted". So the `Aggregation Definition` is the correct choice for us here because it expresses that a tag "lives" independently from a web resource. If you can see, have a look at the screenshot I produced from this stage, the association is selected and the picture renders exactly what i've described up to now.
 
-![screenshot](https://github.com/mukil/dm4.tags/raw/master/tagged_screen_640w.png)
+![screenshot1](https://github.com/mukil/dm4.tags/raw/master/configuring_dm4.tagging-1.1.png)
+![screenshot2](https://github.com/mukil/dm4.tags/raw/master/configuring_dm4.tagging.1.1_Bild2.png)
 
 After having come so far, all your existing and new `Web Resources` can be _edited_ so that they contain a single `Tag`. And if you want to add _many_ tags to your web resources you just have to `Edit` the Topic Type `Web Resource` itself and set the value `One` (which appears next to `Tag` in the edit form) to the value `Many` and save your newly extended Topic Type `Web Resource`.
 
@@ -54,7 +55,18 @@ public class Migration1 extends Migration {
 
 This DeepaMehta plugin is released under the terms of the GNU General Public License in Version 3.0, 2007. You can find a copy of that [here](http://www.gnu.org/licenses/gpl).
 
+# Icons License
+
+The label icon used by this plugoin is "Free for commercial use" (Include link to authors website) and was designed by [Freeiconsweb](http://www.freeiconsweb.com/).
+
 # Changelog
+
+1.1-SNAPSHOT, Feb 28, 2013
+
+- extended Tag to be composed of a "Label" and a "Definition"
+- updated screenshot documentation in README
+
+Note: Users of previous version must reset their DB.
 
 1.0, Dec 3, 2012
 
