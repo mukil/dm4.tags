@@ -1,6 +1,6 @@
 # DeepaMehta 4 Tags Module
 
-A module for users who want to interactively extend a DeepaMehta 4 _Topic_- resp. _Association Type_ of their choice about _one_ or _many_ simple `Tag` field/s. 
+A module for users who want to interactively extend a DeepaMehta 4 _Topic_- resp. _Association Type_ of their choice about _one_ or _many_ simple `Tag` field/s.
 
 The sole use of making this an extra module is, we want to make it clear how to share a taxonomy between various types of information in DeepaMehta, through using `dm4.tags.tag`, e.g. as part of a `Web Resource` or a `Note`.
 
@@ -8,19 +8,19 @@ This plugins was solely developed for backwards compatibility reasons, to simula
 
 # Install Tags Module for DeepaMehta 4
 
-Download the DeepaMehta Tagging 1.0 Bundle. A [download is provided here](https://github.com/downloads/mukil/dm4.tags/deepamehta-tags-1.0.jar) in this repository, also filed under `Downloads`.
+Download the DeepaMehta Tagging 1.0 Bundle. A [download is provided here](https://github.com/downloads/mukil/dm4.tags/deepamehta-tags-1.1.jar) or at http://download.deepamehta.de
 
-Place the downloaded file `deepamehta-tags-1.0.jar` in the `bundles` folder of your deepamehta installation and restart DeepaMehta.
+Place the downloaded file `deepamehta-tags-1.1.jar` in the `bundles` folder of your deepamehta installation and restart DeepaMehta.
 
 # Configure Tags Module for DeepaMehta 4 interactively
 
-Before you are able to start **using** `Tags` you must accomplish the following, non-trivial task of telling your DeepaMehta installation what exactly is going to be tagged and if it will be tagged with just one or with many tags.
+Before you are able to start **using** `Tags` you must accomplish the following, non-trivial task of telling your DeepaMehta installation what exactly is going to be tagged and if it will be tagged with just one or with many tags. So here we go.
 
-So here we go. First, decide what type of information you want to tag with, e.g. "beerware". In this example we are going to enrich `Web Resources` and `Notes` about `Tags` so information of both types can share the same `tags` (and thus can be grouped and navigated together)!
+'''First''', decide what type of information you want to tag with, e.g. "beerware". In this example we are going to enrich `Web Resources` and `Notes` about `Tags` so information of both types can share the same `tags` (and thus can be grouped and navigated together)!
 
-Now, reveal the Topic Type `Web Resource` whose edit form we intend to extend about _many_ input fields of type `Tag`. The easiest way to do so is to select an existing `Web Resource` topic and reveal the topic representing it's type (which is related to all web resource in DeepaMehta via an association of type `Instantiation`). Thus the searched for item is visible every time you select a _web resource_ in DeepaMehta. The Topic Type `Web Resource` is represented by a blue type icon and simply named, guess what `Web Resource`.
+'''Then''', reveal the Topic Type `Web Resource` whose edit form we intend to extend about _many_ input fields of type `Tag`. The easiest way to do so is to select an existing `Web Resource` topic and reveal the topic representing it's type (which is related to all web resource in DeepaMehta via an association of type `Instantiation`). Thus the searched for item is visible every time you select a _web resource_ in DeepaMehta. The Topic Type `Web Resource` is represented by a blue type icon and simply named, guess what `Web Resource`.
 
-Whe you've selected the blue _Topic Type_ called `Web Resource` you additionally need to reveal the newly installed Topic Type `Tag` so you are able to associate both types with each other. In our example the association between this blue `Web Resource` and this blue `Tag` topic needs to be set up to represent the following details about the relationship between these 2 items: A `Tag` plays the `Part Type` related to a `Web Resource` which plays the `Whole Type` respectively. The type of their relationshop is an `Aggregation Definition`. 
+Whe you've selected the blue _Topic Type_ called `Web Resource` you additionally need to reveal the newly installed Topic Type `Tag` so you are able to associate both types with each other. In our example the association between this blue `Web Resource` and this blue `Tag` topic needs to be set up to represent the following details about the relationship between these 2 items: A `Tag` plays the `Child Type` related to a `Web Resource` which plays the `Parent Type` respectively. The type of their relationshop is an `Aggregation Definition`. 
 
 An `Aggregation Definition` is just the expression for: "one single tag can be _part_ of one or many web resources without being deleted when the web resource is deleted". So the `Aggregation Definition` is the correct choice for us here because it expresses that a tag "lives" independently from a web resource. If you can see, have a look at the screenshot I produced from this stage, the association is selected and the picture renders exactly what i've described up to now.
 
@@ -60,6 +60,10 @@ This DeepaMehta plugin is released under the terms of the GNU General Public Lic
 The label icon used by this plugoin is "Free for commercial use" (Include link to authors website) and was designed by [Freeiconsweb](http://www.freeiconsweb.com/).
 
 # Changelog
+
+1.1, Mar 28, 2013
+- Installing the `Tag` bundle automatically assigns the Type `Tag` to the default workspace `DeepaMehta`.
+- updated READMe to DMs new Child / Parent wording
 
 1.1-SNAPSHOT, Feb 28, 2013
 

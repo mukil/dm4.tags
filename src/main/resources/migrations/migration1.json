@@ -1,7 +1,7 @@
 {
     "topic_types": [
         {
-            "value": "Label",
+            "value": "Tag Name",
             "uri": "dm4.tags.label",
             "data_type_uri": "dm4.core.text",
             "index_mode_uris": ["dm4.core.fulltext", "dm4.core.key"],
@@ -9,15 +9,15 @@
                 {
                     "type_uri": "dm4.webclient.view_config",
                     "composite": {
-                        "dm4.webclient.add_to_create_menu": false,
-                        "dm4.webclient.is_searchable_unit": false,
+                        "dm4.webclient.show_in_create_menu": false,
+                        "dm4.webclient.searchable_as_unit": false,
                         "dm4.webclient.rows": 1
                     }
                 }
             ]
         },
         {
-            "value": "Definition",
+            "value": "Tag Definition",
             "uri": "dm4.tags.definition",
             "data_type_uri": "dm4.core.text",
             "index_mode_uris": ["dm4.core.fulltext"],
@@ -25,8 +25,8 @@
                 {
                     "type_uri": "dm4.webclient.view_config",
                     "composite": {
-                        "dm4.webclient.add_to_create_menu": false,
-                        "dm4.webclient.is_searchable_unit": false,
+                        "dm4.webclient.show_in_create_menu": false,
+                        "dm4.webclient.searchable_as_unit": false,
                         "dm4.webclient.input_field_rows": 3
                     }
                 }
@@ -52,8 +52,8 @@
                     "type_uri": "dm4.webclient.view_config",
                     "composite": {
                         "dm4.webclient.icon": "/de.deepamehta.tags/images/tag_32.png",
-                        "dm4.webclient.add_to_create_menu": true,
-                        "dm4.webclient.is_searchable_unit": true
+                        "dm4.webclient.show_in_create_menu": true,
+                        "dm4.webclient.searchable_as_unit": true
                     }
                 }
             ]
