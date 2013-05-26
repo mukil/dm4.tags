@@ -1,0 +1,18 @@
+
+ul.tag-list {
+    padding-left: 0px;
+}
+
+li.tag-item {
+    cursor: pointer;
+}
+
+li.tag-item span.tag-name {
+    position: relative;
+    top: -3px;
+}
+
+li.tag-item img {
+    padding-right: 5px;
+    padding-top: 2px;
+}
