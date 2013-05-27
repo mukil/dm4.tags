@@ -102,27 +102,22 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
         try {
             JSONObject tagList = new JSONObject(tags);
             if (tagList.has("tags")) {
-                // OK, filterin all resources starting by each tag
                 JSONArray all_tags = tagList.getJSONArray("tags");
-                if (all_tags.length() > 1) {
-                    // if this is called with more than 1 tag, we accept the request
+                if (all_tags.length() > 1) { // if this is called with more than 1 tag, we accept the request
+
                     JSONObject tagOne = all_tags.getJSONObject(0);
                     long first_id = tagOne.getLong("id");
-                    // get all resources by the first "Tag"-Topic in line
                     Topic givenTag = dms.getTopic(first_id, true, clientState);
                     tag_resources = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI,
                         PARENT_URI, relatedTopicTypeUri, true, false, 0, clientState);
                     Set<RelatedTopic> missmatches = new LinkedHashSet<RelatedTopic>();
                     Iterator<RelatedTopic> iterator = tag_resources.getIterator();
-                    while (iterator.hasNext()) {
-                        // mark each resource for later removal which does not contain all of the requested tags
+                    while (iterator.hasNext()) { // mark each resource for removal which does not associate all tags
                         RelatedTopic resource = iterator.next();
                         for (int i=1; i < all_tags.length(); i++) {
-                            // check/reduce resultset .. // fixme: JSONArray is not an object.. should never happen!
-                            JSONObject tag = all_tags.getJSONObject(i); // throws exception from time to time
+                            JSONObject tag = all_tags.getJSONObject(i);
                             long t_id = tag.getLong("id");
-                            if (!hasRelatedTopicTag(resource, t_id)) {
-                                // if just one tag is missing, mark this resource for later removal
+                            if (!hasRelatedTopicTag(resource, t_id)) { // if just one tag is missing, mark for removal
                                 missmatches.add(resource);
                             }
                         }
@@ -133,12 +128,13 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                         tag_resources.getItems().remove(topic);
                     }
                     return tag_resources;
+
                 } else {
+                    // fixme: untested
                     // take the one only tag
                     JSONObject tagOne = all_tags.getJSONObject(0);
                     long first_id = tagOne.getLong("id");
-                    // and pass it on to the designated service-method for fetching topics by a single tag
-                    return getTopicsByTagAndTypeURI(first_id, relatedTopicTypeUri, clientState);
+                    return getTopicsByTagAndTypeURI(first_id, relatedTopicTypeUri, clientState); // and pass it on
                 }
             }
             throw new WebApplicationException(new RuntimeException("no tags given"));
@@ -153,14 +149,12 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
 
     /** Private Helper Methods */
 
-
     private boolean hasRelatedTopicTag(RelatedTopic resource, long tagId) {
         CompositeValueModel topicModel = resource.getCompositeValue().getModel();
         if (topicModel.has(TAG_URI)) {
             List<TopicModel> tags = topicModel.getTopics(TAG_URI);
             for (int i = 0; i < tags.size(); i++) {
                 TopicModel resourceTag = tags.get(i);
-                // log.info("      searchedTag is " + tagId + " resourceTag is " + resourceTag.getId());
                 if (resourceTag.getId() == tagId) return true;
             }
         }
