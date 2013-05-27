@@ -12,7 +12,7 @@ import de.deepamehta.core.service.PluginService;
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
  * @website http://github.com/mukil/dm4.tags
- * @version 1.1
+ * @version 1.2
  *
  */
 
