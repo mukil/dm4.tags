@@ -22,7 +22,7 @@ public class Migration2 extends Migration {
     @Override
     public void run() {
 
-        TopicType tagType = dms.getTopicType(TAG_URI, null);
+        TopicType tagType = dms.getTopicType(TAG_URI);
         ViewConfiguration viewConfig = tagType.getViewConfig();
         //
         viewConfig.addSetting("dm4.webclient.view_config",

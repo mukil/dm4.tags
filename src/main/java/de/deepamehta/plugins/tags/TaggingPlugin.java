@@ -35,7 +35,7 @@ import de.deepamehta.plugins.tags.service.TaggingService;
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
  * @website http://github.com/mukil/dm4.tags
- * @version 1.2
+ * @version 1.3 compatible with DeepaMehta 4.1.2
  *
  */
 
@@ -73,9 +73,9 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
         @PathParam("relatedTypeUri") String relatedTopicTypeUri, @HeaderParam("Cookie") ClientState clientState) {
         ResultSet<RelatedTopic> all_results = null;
         try {
-            Topic givenTag = dms.getTopic(tagId, true, clientState);
+            Topic givenTag = dms.getTopic(tagId, true);
             all_results = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI,
-                    PARENT_URI, relatedTopicTypeUri, true, false, 0, clientState);
+                    PARENT_URI, relatedTopicTypeUri, true, false, 0);
             return all_results;
         } catch (Exception e) {
             throw new WebApplicationException(new RuntimeException("Something went wrong fetching tagged topics", e));
@@ -107,9 +107,9 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
 
                     JSONObject tagOne = all_tags.getJSONObject(0);
                     long first_id = tagOne.getLong("id");
-                    Topic givenTag = dms.getTopic(first_id, true, clientState);
+                    Topic givenTag = dms.getTopic(first_id, true);
                     tag_resources = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI,
-                        PARENT_URI, relatedTopicTypeUri, true, false, 0, clientState);
+                        PARENT_URI, relatedTopicTypeUri, true, false, 0);
                     Set<RelatedTopic> missmatches = new LinkedHashSet<RelatedTopic>();
                     Iterator<RelatedTopic> iterator = tag_resources.getIterator();
                     while (iterator.hasNext()) { // mark each resource for removal which does not associate all tags

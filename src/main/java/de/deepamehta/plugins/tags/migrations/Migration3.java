@@ -29,9 +29,9 @@ public class Migration3 extends Migration {
     @Override
     public void run() {
 
-        TopicType tagType = dms.getTopicType(TAG_URI, null);
-        TopicType tagLabelType = dms.getTopicType(TAG_LABEL_URI, null);
-        TopicType tagDefinitionType = dms.getTopicType(TAG_DEFINITION_URI, null);
+        TopicType tagType = dms.getTopicType(TAG_URI);
+        TopicType tagLabelType = dms.getTopicType(TAG_LABEL_URI);
+        TopicType tagDefinitionType = dms.getTopicType(TAG_DEFINITION_URI);
         //
         assignWorkspace(tagType);
         assignWorkspace(tagLabelType);
@@ -44,7 +44,7 @@ public class Migration3 extends Migration {
     /** Assign types to default workspace in any case. */
 
     private void assignWorkspace(Topic topic) {
-        Topic defaultWorkspace = dms.getTopic("uri", new SimpleValue(WS_DEFAULT_URI), false, null);
+        Topic defaultWorkspace = dms.getTopic("uri", new SimpleValue(WS_DEFAULT_URI), false);
         dms.createAssociation(new AssociationModel("dm4.core.aggregation",
             new TopicRoleModel(topic.getId(), "dm4.core.parent_type"),
             new TopicRoleModel(defaultWorkspace.getId(), "dm4.core.child_type")
