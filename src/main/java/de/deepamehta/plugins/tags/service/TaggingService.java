@@ -12,7 +12,7 @@ import de.deepamehta.core.service.ResultList;
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
  * @website http://github.com/mukil/dm4.tags
- * @version 1.3.0 compatible with DeepaMehta 4.1.3-SNAPSHOT
+ * @version 1.3.3 compatible with DeepaMehta 4.1.3-SNAPSHOT
  *
  */
 
