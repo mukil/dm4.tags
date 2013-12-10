@@ -16,7 +16,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 
 import de.deepamehta.core.Topic;
-import de.deepamehta.core.ResultSet;
 import de.deepamehta.core.model.TopicModel;
 import de.deepamehta.core.RelatedTopic;
 import de.deepamehta.core.model.CompositeValueModel;
@@ -27,15 +26,16 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import de.deepamehta.core.osgi.PluginActivator;
+import de.deepamehta.core.service.ResultList;
 import de.deepamehta.plugins.tags.service.TaggingService;
 
 
 /**
- * A basic plugin-service for fetching topics in DeepaMehta 4 by type and one or many tags.
+ * A basic plugin-service for fetching topics in DeepaMehta 4 by type and <em>one</em> or <em>many</em> tags.
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
  * @website http://github.com/mukil/dm4.tags
- * @version 1.3 compatible with DeepaMehta 4.1.2
+ * @version 1.3.0 compatible with DeepaMehta 4.1.3-SNAPSHOT
  *
  */
 
@@ -50,7 +50,9 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     private final static String PARENT_URI = "dm4.core.parent";
     private final static String AGGREGATION = "dm4.core.aggregation";
 
-    private final static String TAG_URI = "dm4.tags.tag";
+    public final static String TAG_URI = "dm4.tags.tag";
+    public final static String TAG_LABEL_URI = "dm4.tags.label";
+    public final static String TAG_DEFINITION_URI = "dm4.tags.definition";
 
 
 
@@ -69,9 +71,9 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     @Path("/{tagId}/{relatedTypeUri}")
     @Produces("application/json")
     @Override
-    public ResultSet<RelatedTopic> getTopicsByTagAndTypeURI(@PathParam("tagId") long tagId,
+    public ResultList<RelatedTopic> getTopicsByTagAndTypeURI(@PathParam("tagId") long tagId,
         @PathParam("relatedTypeUri") String relatedTopicTypeUri, @HeaderParam("Cookie") ClientState clientState) {
-        ResultSet<RelatedTopic> all_results = null;
+        ResultList<RelatedTopic> all_results = null;
         try {
             Topic givenTag = dms.getTopic(tagId, true);
             all_results = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI,
@@ -96,9 +98,9 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     @Consumes("application/json")
     @Produces("application/json")
     @Override
-    public ResultSet<RelatedTopic> getTopicsByTagsAndTypeUri(String tags, @PathParam("relatedTypeUri")
+    public ResultList<RelatedTopic> getTopicsByTagsAndTypeUri(String tags, @PathParam("relatedTypeUri")
             String relatedTopicTypeUri, @HeaderParam("Cookie") ClientState clientState) {
-        ResultSet<RelatedTopic> tag_resources = null;
+        ResultList<RelatedTopic> tag_resources = null;
         try {
             JSONObject tagList = new JSONObject(tags);
             if (tagList.has("tags")) {
@@ -111,7 +113,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                     tag_resources = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI,
                         PARENT_URI, relatedTopicTypeUri, true, false, 0);
                     Set<RelatedTopic> missmatches = new LinkedHashSet<RelatedTopic>();
-                    Iterator<RelatedTopic> iterator = tag_resources.getIterator();
+                    Iterator<RelatedTopic> iterator = tag_resources.iterator();
                     while (iterator.hasNext()) { // mark each resource for removal which does not associate all tags
                         RelatedTopic resource = iterator.next();
                         for (int i=1; i < all_tags.length(); i++) {
@@ -130,8 +132,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                     return tag_resources;
 
                 } else {
-                    // fixme: untested
-                    // take the one only tag
+                    // fixme: all_tags provided may be < 0
                     JSONObject tagOne = all_tags.getJSONObject(0);
                     long first_id = tagOne.getLong("id");
                     return getTopicsByTagAndTypeURI(first_id, relatedTopicTypeUri, clientState); // and pass it on
