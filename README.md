@@ -10,7 +10,7 @@ This plugins was solely developed for backwards compatibility reasons, to simula
 
 Download DeepaMehta 4 Tags, a [download is provided here](http://download.deepamehta.de).
 
-Place the downloaded file `dm42-deepamehta-tags-1.3.4.jar` in the `bundles` folder of your DeepaMehta installation and restart DeepaMehta.
+Place the downloaded file `dm42-deepamehta-tags-1.3.5.jar` in the `bundles` folder of your DeepaMehta installation and restart DeepaMehta.
 
 # Use Tags as a developer 
 
@@ -61,6 +61,9 @@ This DeepaMehta plugin is released under the terms of the GNU General Public Lic
 The label icon used by this plugin is "Free for commercial use" (Include link to authors website) and was designed by [Freeiconsweb](http://www.freeiconsweb.com/).
 
 # Changelog
+
+1.3.5, Feb 28, 2014
+- Fixes "icon-missing" issue introduced in 1.3.4
 
 1.3.4, Feb 28, 2014
 - Compatible with DeepaMehta 4.2

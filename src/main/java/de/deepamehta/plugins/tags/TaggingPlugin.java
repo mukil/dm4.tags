@@ -35,7 +35,7 @@ import de.deepamehta.plugins.tags.service.TaggingService;
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
  * @website http://github.com/mukil/dm4.tags
- * @version 1.3.4 compatible with DeepaMehta 4.2
+ * @version 1.3.5 compatible with DeepaMehta 4.2
  *
  */
 
