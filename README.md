@@ -8,28 +8,9 @@ This plugins was solely developed for backwards compatibility reasons, to simula
 
 # Install Tags Module for DeepaMehta 4
 
-Download the DeepaMehta Tagging 1.0 Bundle. A [download is provided here](https://github.com/downloads/mukil/dm4.tags/deepamehta-tags-1.1.jar) or at http://download.deepamehta.de
+Download DeepaMehta 4 Tags, a [download is provided here](http://download.deepamehta.de).
 
-Place the downloaded file `deepamehta-tags-1.1.jar` in the `bundles` folder of your deepamehta installation and restart DeepaMehta.
-
-# Configure Tags Module for DeepaMehta 4 interactively
-
-Before you are able to start **using** `Tags` you must accomplish the following, non-trivial task of telling your DeepaMehta installation what exactly is going to be tagged and if it will be tagged with just one or with many tags. So here we go.
-
-'''First''', decide what type of information you want to tag with, e.g. "beerware". In this example we are going to enrich `Web Resources` and `Notes` about `Tags` so information of both types can share the same `tags` (and thus can be grouped and navigated together)!
-
-'''Then''', reveal the Topic Type `Web Resource` whose edit form we intend to extend about _many_ input fields of type `Tag`. The easiest way to do so is to select an existing `Web Resource` topic and reveal the topic representing it's type (which is related to all web resource in DeepaMehta via an association of type `Instantiation`). Thus the searched for item is visible every time you select a _web resource_ in DeepaMehta. The Topic Type `Web Resource` is represented by a blue type icon and simply named, guess what `Web Resource`.
-
-Whe you've selected the blue _Topic Type_ called `Web Resource` you additionally need to reveal the newly installed Topic Type `Tag` so you are able to associate both types with each other. In our example the association between this blue `Web Resource` and this blue `Tag` topic needs to be set up to represent the following details about the relationship between these 2 items: A `Tag` plays the `Child Type` related to a `Web Resource` which plays the `Parent Type` respectively. The type of their relationshop is an `Aggregation Definition`. 
-
-An `Aggregation Definition` is just the expression for: "one single tag can be _part_ of one or many web resources without being deleted when the web resource is deleted". So the `Aggregation Definition` is the correct choice for us here because it expresses that a tag "lives" independently from a web resource. If you can see, have a look at the screenshot I produced from this stage, the association is selected and the picture renders exactly what i've described up to now.
-
-![screenshot1](https://github.com/mukil/dm4.tags/raw/master/configuring_dm4.tagging-1.1.png)
-![screenshot2](https://github.com/mukil/dm4.tags/raw/master/configuring_dm4.tagging.1.1_Bild2.png)
-
-After having come so far, all your existing and new `Web Resources` can be _edited_ so that they contain a single `Tag`. And if you want to add _many_ tags to your web resources you just have to `Edit` the Topic Type `Web Resource` itself and set the value `One` (which appears next to `Tag` in the edit form) to the value `Many` and save your newly extended Topic Type `Web Resource`.
-
-Congratulations! You just told DeepaMehta the way you would like to organize and think about a `Web Resource`. Each of your web resources can now also be made of `Tags`. And thus, a web resource tagged with many tags can be found under many different labels, or let's say: in more than one folder of your firefox bookmarks-toolbar when you're trying to find it. Done this, done that. Now you can do the exactly the same with the Topic Type `Note`. You can now start to re-use the blue Topic Type `Tag` in as manys other types of information in DeepaMehta 4.
+Place the downloaded file `dm42-deepamehta-tags-1.3.4.jar` in the `bundles` folder of your DeepaMehta installation and restart DeepaMehta.
 
 # Use Tags as a developer 
 
@@ -51,15 +32,40 @@ public class Migration1 extends Migration {
 }
 </pre>
 
+# Configure Tags Module for DeepaMehta 4 interactively
+
+Before you are able to start **using** `Tags` you must accomplish the following, non-trivial task of telling your DeepaMehta installation what exactly is going to be tagged and if it will be tagged with just one or with many tags. So here we go.
+
+'''First''', decide what type of information you want to tag with, e.g. "beerware". In this example we are going to enrich `Web Resources` and `Notes` about `Tags` so information of both types can share the same `tags` (and thus can be grouped and navigated together)!
+
+'''Then''', reveal the Topic Type `Web Resource` whose edit form we intend to extend about _many_ input fields of type `Tag`. The easiest way to do so is to select an existing `Web Resource` topic and reveal the topic representing it's type (which is related to all web resource in DeepaMehta via an association of type `Instantiation`). Thus the searched for item is visible every time you select a _web resource_ in DeepaMehta. The Topic Type `Web Resource` is represented by a blue type icon and simply named, guess what `Web Resource`.
+
+Whe you've selected the blue _Topic Type_ called `Web Resource` you additionally need to reveal the newly installed Topic Type `Tag` so you are able to associate both types with each other. In our example the association between this blue `Web Resource` and this blue `Tag` topic needs to be set up to represent the following details about the relationship between these 2 items: A `Tag` plays the `Child Type` related to a `Web Resource` which plays the `Parent Type` respectively. The type of their relationshop is an `Aggregation Definition`. 
+
+An `Aggregation Definition` is just the expression for: "one single tag can be _part_ of one or many web resources without being deleted when the web resource is deleted". So the `Aggregation Definition` is the correct choice for us here because it expresses that a tag "lives" independently from a web resource. If you can see, have a look at the screenshot I produced from this stage, the association is selected and the picture renders exactly what i've described up to now.
+
+![screenshot1](https://github.com/mukil/dm4.tags/raw/master/configuring_dm4.tagging-1.1.png)
+![screenshot2](https://github.com/mukil/dm4.tags/raw/master/configuring_dm4.tagging.1.1_Bild2.png)
+
+After having come so far, all your existing and new `Web Resources` can be _edited_ so that they contain a single `Tag`. And if you want to add _many_ tags to your web resources you just have to `Edit` the Topic Type `Web Resource` itself and set the value `One` (which appears next to `Tag` in the edit form) to the value `Many` and save your newly extended Topic Type `Web Resource`.
+
+Congratulations! You just told DeepaMehta the way you would like to organize and think about a `Web Resource`. Each of your web resources can now also be made of `Tags`. And thus, a web resource tagged with many tags can be found under many different labels, or let's say: in more than one folder of your firefox bookmarks-toolbar when you're trying to find it. Done this, done that. Now you can do the exactly the same with the Topic Type `Note`. You can now start to re-use the blue Topic Type `Tag` in as manys other types of information in DeepaMehta 4.
+
+
 # GNU Public License
 
 This DeepaMehta plugin is released under the terms of the GNU General Public License in Version 3.0, 2007. You can find a copy of that [here](http://www.gnu.org/licenses/gpl).
 
 # Icons License
 
-The label icon used by this plugoin is "Free for commercial use" (Include link to authors website) and was designed by [Freeiconsweb](http://www.freeiconsweb.com/).
+The label icon used by this plugin is "Free for commercial use" (Include link to authors website) and was designed by [Freeiconsweb](http://www.freeiconsweb.com/).
 
 # Changelog
+
+1.3.4, Feb 28, 2014
+- Compatible with DeepaMehta 4.2
+
+1.2, 1.3.0, 1.3.1, 1.3.2, 1.3.3
 
 1.1, Mar 28, 2013
 - Installing the `Tag` bundle automatically assigns the Type `Tag` to the default workspace `DeepaMehta`.
@@ -80,4 +86,5 @@ initialization of this plugin.
 - a detailed readme containing a short modeling tutorial and an imperative migration example for developers
 - upload of binary release
 
-Copyright 2012, Malte Reißig
+Author: Malte Reißig
+

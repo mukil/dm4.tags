@@ -35,7 +35,7 @@ import de.deepamehta.plugins.tags.service.TaggingService;
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
  * @website http://github.com/mukil/dm4.tags
- * @version 1.3.3 compatible with DeepaMehta 4.1.3-SNAPSHOT
+ * @version 1.3.4 compatible with DeepaMehta 4.2
  *
  */
 
@@ -100,7 +100,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     @Override
     public ResultList<RelatedTopic> getTopicsByTagsAndTypeUri(String tags, @PathParam("relatedTypeUri")
             String relatedTopicTypeUri, @HeaderParam("Cookie") ClientState clientState) {
-        ResultList<RelatedTopic> tag_resources = null;
+        ResultList<RelatedTopic> result = null;
         try {
             JSONObject tagList = new JSONObject(tags);
             if (tagList.has("tags")) {
@@ -110,10 +110,10 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                     JSONObject tagOne = all_tags.getJSONObject(0);
                     long first_id = tagOne.getLong("id");
                     Topic givenTag = dms.getTopic(first_id, true);
-                    tag_resources = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI,
-                        PARENT_URI, relatedTopicTypeUri, true, false, 0);
+                    result = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI,
+PARENT_URI, relatedTopicTypeUri, true, false, 0);
                     Set<RelatedTopic> missmatches = new LinkedHashSet<RelatedTopic>();
-                    Iterator<RelatedTopic> iterator = tag_resources.iterator();
+                    Iterator<RelatedTopic> iterator = result.iterator();
                     while (iterator.hasNext()) { // mark each resource for removal which does not associate all tags
                         RelatedTopic resource = iterator.next();
                         for (int i=1; i < all_tags.length(); i++) {
@@ -127,9 +127,9 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                     // build up the final result set
                     for (Iterator<RelatedTopic> it = missmatches.iterator(); it.hasNext();) {
                         RelatedTopic topic = it.next();
-                        tag_resources.getItems().remove(topic);
+                        result.getItems().remove(topic);
                     }
-                    return tag_resources;
+                    return result;
 
                 } else {
                     // fixme: all_tags provided may be < 0
