@@ -7,7 +7,7 @@
     <name>DeepaMehta 4 Tags</name>
     <groupId>de.deepamehta</groupId>
     <artifactId>dm42-deepamehta-tags</artifactId>
-    <version>1.3.5</version>
+    <version>1.3.6</version>
     <packaging>bundle</packaging>
 
     <parent>
@@ -23,6 +23,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
+                        <Bundle-SymbolicName>de.deepamehta.tags</Bundle-SymbolicName>
                         <Bundle-Activator>
                             de.deepamehta.plugins.tags.TaggingPlugin
                         </Bundle-Activator>
