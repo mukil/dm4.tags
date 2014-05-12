@@ -87,10 +87,10 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     /**
      * Fetches all topics of given type "aggregating" all given "Tag"-<code>Topics</code>.
      *
+     * @param {tags}                A JSONObject containing JSONArray ("tags") of "Tag"-Topics is expected
+     *                              (e.g. { "tags": [ { "id": 1234 } ] }).
      * @param {relatedTypeUri}      A type_uri of a composite (e.g. "org.deepamehta.resources.resource")
      *                              which aggregates one or many "dm4.tags.tag".
-     * @param {body}                A JSONObject containing JSONArray ("tags") of "Tag"-Topics is expected
-     *                              (e.g. { "tags": [] }).
      */
 
     @POST
@@ -105,34 +105,44 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
             JSONObject tagList = new JSONObject(tags);
             if (tagList.has("tags")) {
                 JSONArray all_tags = tagList.getJSONArray("tags");
-                if (all_tags.length() > 1) { // if this is called with more than 1 tag, we accept the request
-
+                // 1) if this method is called with more than 1 tag, we proceed with
+                if (all_tags.length() > 1) {
+                    // 2) fetching all topics related to the very first tag given
                     JSONObject tagOne = all_tags.getJSONObject(0);
                     long first_id = tagOne.getLong("id");
                     Topic givenTag = dms.getTopic(first_id, true);
-                    result = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI,
-PARENT_URI, relatedTopicTypeUri, true, false, 0);
+                    result = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI, PARENT_URI,
+                            relatedTopicTypeUri, true, false, 0);
+                    // 3) Iterate over all topics tagged with this (one) tag
                     Set<RelatedTopic> missmatches = new LinkedHashSet<RelatedTopic>();
                     Iterator<RelatedTopic> iterator = result.iterator();
-                    while (iterator.hasNext()) { // mark each resource for removal which does not associate all tags
+                    while (iterator.hasNext()) {
+                        // 4) To check on each resource if it does relate to ALL given tags
                         RelatedTopic resource = iterator.next();
+                        remove:
                         for (int i=1; i < all_tags.length(); i++) {
                             JSONObject tag = all_tags.getJSONObject(i);
                             long t_id = tag.getLong("id");
+                            // Topic tag_to_check = dms.getTopic(t_id, false);
                             if (!hasRelatedTopicTag(resource, t_id)) { // if just one tag is missing, mark for removal
                                 missmatches.add(resource);
+                                break remove;
                             }
                         }
                     }
-                    // build up the final result set
+                    // 5) remove all "not-matching" items from our initial resultset
                     for (Iterator<RelatedTopic> it = missmatches.iterator(); it.hasNext();) {
                         RelatedTopic topic = it.next();
                         result.getItems().remove(topic);
+                        // 6) check if any "not-matching" items is still part of our resultset (doubling)
+                        if (result.getItems().contains(topic)) {
+                            log.warning("DATA INCONSISTENCY:" + topic.getId() + " has two associations to the first "
+                                + "given-tag ("+givenTag.getSimpleValue() +")");
+                        }
                     }
                     return result;
-
                 } else {
-                    // fixme: all_tags provided may be < 0
+                    // fixme: tags-array may contain < 0 items
                     JSONObject tagOne = all_tags.getJSONObject(0);
                     long first_id = tagOne.getLong("id");
                     return getTopicsByTagAndTypeURI(first_id, relatedTopicTypeUri, clientState); // and pass it on
