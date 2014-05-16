@@ -28,6 +28,7 @@ import org.codehaus.jettison.json.JSONObject;
 import de.deepamehta.core.osgi.PluginActivator;
 import de.deepamehta.core.service.ResultList;
 import de.deepamehta.plugins.tags.service.TaggingService;
+import java.util.*;
 
 
 /**
@@ -46,13 +47,22 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
 
     private Logger log = Logger.getLogger(getClass().getName());
 
+    // --- DeepaMehta Standard URIs
+
     private final static String CHILD_URI = "dm4.core.child";
     private final static String PARENT_URI = "dm4.core.parent";
     private final static String AGGREGATION = "dm4.core.aggregation";
 
+    // --- Tag Type URIs
+
     public final static String TAG_URI = "dm4.tags.tag";
     public final static String TAG_LABEL_URI = "dm4.tags.label";
     public final static String TAG_DEFINITION_URI = "dm4.tags.definition";
+
+    // --- Additional View Model URIs
+
+    public static final String VIEW_RELATED_COUNT_URI = "view_related_count";
+    public static final String VIEW_CSS_CLASS_COUNT_URI = "view_css_class";
 
 
 
@@ -156,9 +166,73 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
         }
     }
 
+    /**
+     * Getting {"value", "type_uri", "id" and "related_count:"} values of (interesting) topics in range.
+     */
+
+    @GET
+    @Path("/with_related_count/{related_type_uri}")
+    @Produces("application/json")
+    public String getViewTagsModelWithRelatedCount(@PathParam("related_type_uri") String related_type_uri) {
+        //
+        JSONArray results = new JSONArray();
+        try {
+            // 1) Fetch Resultset of Resources
+            log.info("Counting all related topics of type \"" + related_type_uri + "\"");
+            ArrayList<Topic> prepared_topics = new ArrayList<Topic>();
+            ResultList<RelatedTopic> all_tags = dms.getTopics(TAG_URI, false, 0);
+            log.info("Identified " + all_tags.getSize() + " tags");
+            // 2) Prepare view model of each result item
+            Iterator<RelatedTopic> resultset = all_tags.getItems().iterator();
+            while (resultset.hasNext()) {
+                Topic in_question = resultset.next();
+                int count = in_question.getRelatedTopics(AGGREGATION, CHILD_URI, PARENT_URI,
+                        related_type_uri, false, false, 0).getSize();
+                enrichTopicModelAboutRelatedCount(in_question, count);
+                prepared_topics.add(in_question);
+            }
+            // 3) sort all result-items by the number of related-topics (of given type)
+            Collections.sort(prepared_topics, new Comparator<Topic>() {
+                public int compare(Topic t1, Topic t2) {
+                    int one = t1.getCompositeValue().getInt(VIEW_RELATED_COUNT_URI);
+                    int two = t2.getCompositeValue().getInt(VIEW_RELATED_COUNT_URI);
+                    if ( one < two ) return 1;
+                    if ( one > two ) return -1;
+                    return 0;
+                }
+            });
+            // 4) Turn over to JSON Array and add a computed css-class (indicating the "weight" of a tag)
+            for (Topic item : prepared_topics) { // 2) prepare resource items
+                enrichTopicModelAboutCSSClass(item, item.getCompositeValue().getInt(VIEW_RELATED_COUNT_URI));
+                results.put(item.toJSON());
+            }
+            return results.toString();
+        } catch (Exception e) {
+            throw new WebApplicationException(new RuntimeException("something went wrong", e));
+        } finally {
+            return results.toString();
+        }
+    }
+
 
 
     /** Private Helper Methods */
+
+    private void enrichTopicModelAboutRelatedCount (Topic resource, int count) {
+        CompositeValueModel resourceModel = resource.getCompositeValue().getModel();
+        resourceModel.put(VIEW_RELATED_COUNT_URI, count);
+    }
+
+    private void enrichTopicModelAboutCSSClass (Topic resource, int related_count) {
+        CompositeValueModel resourceModel = resource.getCompositeValue().getModel();
+        String className = "few";
+        if (related_count > 5) className = "some";
+        if (related_count > 15) className = "quitesome";
+        if (related_count > 25) className = "more";
+        if (related_count > 50) className = "many";
+        if (related_count > 70) className = "manymore";
+        resourceModel.put(VIEW_CSS_CLASS_COUNT_URI, className);
+    }
 
     private boolean hasRelatedTopicTag(RelatedTopic resource, long tagId) {
         CompositeValueModel topicModel = resource.getCompositeValue().getModel();

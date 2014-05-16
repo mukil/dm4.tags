@@ -22,4 +22,7 @@ public interface TaggingService extends PluginService {
 
   ResultList<RelatedTopic> getTopicsByTagsAndTypeUri(String tags, String relatedTypeUri, ClientState clientState);
 
+  /** Returns a String coded JSONArray with special view topics (enriched about related_count and a CSS class). */
+  String getViewTagsModelWithRelatedCount(String relatedTypeUri);
+
 }
