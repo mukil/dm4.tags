@@ -1,38 +1,15 @@
+
 # DeepaMehta 4 Tags Module
 
-A module for users who want to interactively extend a DeepaMehta 4 _Topic_- resp. _Association Type_ of their choice about _one_ or _many_ simple `Tag` field/s.
+A DeepaMehta 4 plugin introducing the TopicType _Tag_ (`dm4.tags.tag`) to extend any DeepaMehta 4 _Topic_- or _Association Type_ about a GUI to enter _one_ or _many_ related `Tag/s`.
 
-The sole use of making this an extra module is, we want to make it clear how to share a taxonomy between various types of information in DeepaMehta, through using `dm4.tags.tag`, e.g. as part of a `Web Resource` or a `Note`.
+## Download & Installation
 
-This plugins was solely developed for backwards compatibility reasons, to simulare hierarchical structures like those known from file-systems or browser bookmarks ("reasons of familiarity for internet users who joined the network after the millenium"). It maybe useless very soon and it's sole existence remains to be discussed. At the same time it's an hommage to the first human being leaving a hand-mark made out of natural purpur-color on the surface stone over 30 thousand years ago, the earliest `tag` known to humankind[unknown source] expressing `i was here` by tagging the stone.
+You can download a bundle file for installation at [download.deepamehta.de/nightly](http://download.deepamehta.de).
 
-# Install Tags Module for DeepaMehta 4
+Place the downloaded `dm42-deepamehta-tags-1.3.6.jar`-file in the `bundles` folder of your DeepaMehta installation and restart DeepaMehta.
 
-Download DeepaMehta 4 Tags, a [download is provided here](http://download.deepamehta.de).
-
-Place the downloaded file `dm42-deepamehta-tags-1.3.6.jar` in the `bundles` folder of your DeepaMehta installation and restart DeepaMehta.
-
-# Use Tags as a developer 
-
-Example: To setup this renderer as part of your model/migration you need to reference the `dm4.tags.tag` uri as an aggregated child topic of your composite topic. The easiest way to do so in an imperative migration would look like the following:
-
-<pre>
-
-public class Migration1 extends Migration {
-
-    @Override
-    public void run() {
-
-        /** Enrich topicmap type `Web Resource` about many `Tag` fields */
-        TopicType webResource = dms.getTopicType("dm4.webbrowser.web_resource", null);
-        webResource.addAssocDef(new AssociationDefinitionModel("dm4.core.aggregation_def",
-            "dm4.webbrowser.web_resource", "dm4.tags.tag", "dm4.core.one", "dm4.core.many"));
-    }
-
-}
-</pre>
-
-# Configure Tags Module for DeepaMehta 4 interactively
+## Usage Tags as a user (interactive setup)
 
 Before you are able to start **using** `Tags` you must accomplish the following, non-trivial task of telling your DeepaMehta installation what exactly is going to be tagged and if it will be tagged with just one or with many tags. So here we go.
 
@@ -51,40 +28,63 @@ After having come so far, all your existing and new `Web Resources` can be _edit
 
 Congratulations! You just told DeepaMehta the way you would like to organize and think about a `Web Resource`. Each of your web resources can now also be made of `Tags`. And thus, a web resource tagged with many tags can be found under many different labels, or let's say: in more than one folder of your firefox bookmarks-toolbar when you're trying to find it. Done this, done that. Now you can do the exactly the same with the Topic Type `Note`. You can now start to re-use the blue Topic Type `Tag` in as manys other types of information in DeepaMehta 4.
 
+## Use Tags as a developer
 
-# GNU Public License
+Example: To setup this renderer as part of your model/migration you need to reference the `dm4.tags.tag` uri as an aggregated child topic of your composite topic. The easiest way to do so in an imperative migration would look like the following:
+
+<pre>
+
+public class Migration1 extends Migration {
+
+    @Override
+    public void run() {
+
+        /** Enrich topicmap type `Web Resource` about many `Tag` fields */
+        TopicType webResource = dms.getTopicType("dm4.webbrowser.web_resource");
+        webResource.addAssocDef(new AssociationDefinitionModel("dm4.core.aggregation_def",
+            "dm4.webbrowser.web_resource", "dm4.tags.tag", "dm4.core.one", "dm4.core.many"));
+    }
+
+}
+</pre>
+
+
+## GNU Public License
 
 This DeepaMehta plugin is released under the terms of the GNU General Public License in Version 3.0, 2007. You can find a copy of that [here](http://www.gnu.org/licenses/gpl).
 
-# Icons License
+## Icons License
 
 The label icon used by this plugin is "Free for commercial use" (Include link to authors website) and was designed by [Freeiconsweb](http://www.freeiconsweb.com/).
 
-# Changelog
+## Version History
 
-1.3.6, Feb 28, 2014
+**1.3.7-SNAPSHOT**, UPCOMING
+- Introduced service method to generate a simple tag-cloud
+
+**1.3.6**, Feb 28, 2014
 - Finally fixing "icon-missing" issue which was not fixed in the 1.3.5 commit.
 
-1.3.5, Feb 28, 2014
+**1.3.5**, Feb 28, 2014
 - Fixes "icon-missing" issue introduced in 1.3.4
 
-1.3.4, Feb 28, 2014
+**1.3.4**, Feb 28, 2014
 - Compatible with DeepaMehta 4.2
 
-1.2, 1.3.0, 1.3.1, 1.3.2, 1.3.3
+1.2, 1.3.0, 1.3.1, 1.3.2, 1.3.3 - No information available
 
-1.1, Mar 28, 2013
+**1.1**, Mar 28, 2013
 - Installing the `Tag` bundle automatically assigns the Type `Tag` to the default workspace `DeepaMehta`.
 - updated READMe to DMs new Child / Parent wording
 
-1.1-SNAPSHOT, Feb 28, 2013
+**1.1-SNAPSHOT**, Feb 28, 2013
 
 - extended Tag to be composed of a "Label" and a "Definition"
 - updated screenshot documentation in README
 
 Note: Users of previous version must reset their DB.
 
-1.0, Dec 3, 2012
+**1.0**, Dec 3, 2012
 
 initialization of this plugin.
 
@@ -92,5 +92,6 @@ initialization of this plugin.
 - a detailed readme containing a short modeling tutorial and an imperative migration example for developers
 - upload of binary release
 
-Author: Malte Reißig
+-------------------------------
+Author: Malte Reißig, 2012-2014
 
