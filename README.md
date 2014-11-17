@@ -1,30 +1,40 @@
 
 # DeepaMehta 4 Tags Module
 
-A DeepaMehta 4 plugin introducing the TopicType _Tag_ (`dm4.tags.tag`) to extend any DeepaMehta 4 _Topic_- or _Association Type_ about a GUI to enter _one_ or _many_ related `Tag/s`.
+A DeepaMehta 4 plugin realizing the use-case of tagging. This module allows users to tag topics with the help of so called "auto-completion", an input field helping authors to re-use/reference existing tags. 
+
+It does so through introducing the Topic Type _Tag_ (`dm4.tags.tag`) with which one can extend any DeepaMehta 4 _Topic_- or _Association Type_ interactively. The plugin comes with a custom renderer for _many_ `Tag/s`, so make sure you configure _Tags_ to be a "Child Type" of _many_, otherwise you won't see the auto-completion GUI.
 
 ## Download & Installation
 
 You can download a bundle file for installation at [download.deepamehta.de/nightly](http://download.deepamehta.de).
 
-Place the downloaded `dm42-deepamehta-tags-1.3.6.jar`-file in the `bundles` folder of your DeepaMehta installation and restart DeepaMehta.
+Place the downloaded `dm43-deepamehta-tags-1.3.7.jar`-file in the `bundles` folder of your DeepaMehta installation and restart DeepaMehta.
+
+### Configuration
+
+Reveal the 
+
+![screenshot1](https://github.com/mukil/dm4.tags/raw/master/help-configuring_notes-for-tagging-screen-1.png)
 
 ## Usage Tags as a user (interactive setup)
 
-Before you are able to start **using** `Tags` you must accomplish the following, non-trivial task of telling your DeepaMehta installation what exactly is going to be tagged and if it will be tagged with just one or with many tags. So here we go.
+Before you are able to start **using** `Tags` you must tell your DeepaMehta installation which type of information you want to tag. So here we go.
 
-'''First''', decide what type of information you want to tag with, e.g. "beerware". In this example we are going to enrich `Web Resources` and `Notes` about `Tags` so information of both types can share the same `tags` (and thus can be grouped and navigated together)!
+In this example we are going to enrich `Web Resources` and `Notes` about `Tags` so information of both types can share the same `tags`. This way our bookmarks and notes share the same taxonomy!
 
-'''Then''', reveal the Topic Type `Web Resource` whose edit form we intend to extend about _many_ input fields of type `Tag`. The easiest way to do so is to select an existing `Web Resource` topic and reveal the topic representing it's type (which is related to all web resource in DeepaMehta via an association of type `Instantiation`). Thus the searched for item is visible every time you select a _web resource_ in DeepaMehta. The Topic Type `Web Resource` is represented by a blue type icon and simply named, guess what `Web Resource`.
+Reveal the _Topic Type_ `Web Resource` (via "By Type"-Search). The _Topic Type_ is also visible every time you select a _Web Resource_ in DeepaMehta. In DeepaMehta 4 Topic Types always have a blue squared icon.
 
-Whe you've selected the blue _Topic Type_ called `Web Resource` you additionally need to reveal the newly installed Topic Type `Tag` so you are able to associate both types with each other. In our example the association between this blue `Web Resource` and this blue `Tag` topic needs to be set up to represent the following details about the relationship between these 2 items: A `Tag` plays the `Child Type` related to a `Web Resource` which plays the `Parent Type` respectively. The type of their relationshop is an `Aggregation Definition`. 
+Whe you've selected the _Topic Type_ `Web Resource` you additionally need to reveal the newly installed Topic Type `Tag` so you are able to associate both types with each other. To draw an assocation between two topics you can use the context menu (available via the right mouse button) above one of the topics. In our example the association between these two topics needs to be set up with the following details: The type of their relationshop is an `Aggregation Definition` and a `Tag` plays the `Child Type` related to a `Web Resource` which plays the `Parent Type` respectively.
 
-An `Aggregation Definition` is just the expression for: "one single tag can be _part_ of one or many web resources without being deleted when the web resource is deleted". So the `Aggregation Definition` is the correct choice for us here because it expresses that a tag "lives" independently from a web resource. If you can see, have a look at the screenshot I produced from this stage, the association is selected and the picture renders exactly what i've described up to now.
+An `Aggregation Definition` is just the expression for: "one single tag can be _part_ of one or many web resources without being deleted when the web resource is deleted". So the `Aggregation Definition` is the correct choice for us here because it expresses that a tag "lives" independently from a web resource. When you select your newly configured association your screen should render exactly the following image.
 
-![screenshot1](https://github.com/mukil/dm4.tags/raw/master/configuring_dm4.tagging-1.1.png)
-![screenshot2](https://github.com/mukil/dm4.tags/raw/master/configuring_dm4.tagging.1.1_Bild2.png)
+![screenshot2](https://github.com/mukil/dm4.tags/raw/master/configuring_dm4.tagging-1.1.png)
 
-After having come so far, all your existing and new `Web Resources` can be _edited_ so that they contain a single `Tag`. And if you want to add _many_ tags to your web resources you just have to `Edit` the Topic Type `Web Resource` itself and set the value `One` (which appears next to `Tag` in the edit form) to the value `Many` and save your newly extended Topic Type `Web Resource`.
+To get the auto-completion field on your `Web resources` we must configure it to potentially reference _many_ tags and therefore we just have to `Edit` the Topic Type `Web Resource` itself and set the value `One` (which appears next to `Tag` in the edit form) to the value `Many`. Ok, and we're done.
+
+
+![screenshot3](https://github.com/mukil/dm4.tags/raw/master/configuring_dm4.tagging.1.1_Bild2.png)
 
 Congratulations! You just told DeepaMehta the way you would like to organize and think about a `Web Resource`. Each of your web resources can now also be made of `Tags`. And thus, a web resource tagged with many tags can be found under many different labels, or let's say: in more than one folder of your firefox bookmarks-toolbar when you're trying to find it. Done this, done that. Now you can do the exactly the same with the Topic Type `Note`. You can now start to re-use the blue Topic Type `Tag` in as manys other types of information in DeepaMehta 4.
 
@@ -61,6 +71,7 @@ The label icon used by this plugin is "Free for commercial use" (Include link to
 
 **1.3.7-SNAPSHOT**, UPCOMING
 - Introduced service method to generate a simple tag-cloud
+- Compatible with DeepaMehta 4.3
 
 **1.3.6**, Feb 28, 2014
 - Finally fixing "icon-missing" issue which was not fixed in the 1.3.5 commit.

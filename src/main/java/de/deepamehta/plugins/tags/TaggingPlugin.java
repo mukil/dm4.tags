@@ -36,7 +36,7 @@ import java.util.*;
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
  * @website http://github.com/mukil/dm4.tags
- * @version 1.3.6 compatible with DeepaMehta 4.2
+ * @version 1.3.7 compatible with DeepaMehta 4.3
  *
  */
 
