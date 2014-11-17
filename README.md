@@ -69,7 +69,7 @@ The label icon used by this plugin is "Free for commercial use" (Include link to
 
 ## Version History
 
-**1.3.7-SNAPSHOT**, UPCOMING
+**1.3.7, Nov 17, 2014
 - Introduced service method to generate a simple tag-cloud
 - Compatible with DeepaMehta 4.3
 
