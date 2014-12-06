@@ -44,11 +44,11 @@ public class Migration3 extends Migration {
     /** Assign types to default workspace in any case. */
 
     private void assignWorkspace(Topic topic) {
-        Topic defaultWorkspace = dms.getTopic("uri", new SimpleValue(WS_DEFAULT_URI), false);
+        Topic defaultWorkspace = dms.getTopic("uri", new SimpleValue(WS_DEFAULT_URI));
         dms.createAssociation(new AssociationModel("dm4.core.aggregation",
             new TopicRoleModel(topic.getId(), "dm4.core.parent_type"),
             new TopicRoleModel(defaultWorkspace.getId(), "dm4.core.child_type")
-        ), null);
+        ));
     }
 
 }

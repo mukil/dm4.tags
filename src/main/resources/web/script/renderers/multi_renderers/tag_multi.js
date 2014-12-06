@@ -10,8 +10,8 @@
             var list = $('<ul class="tag-list">')
             for (var i = 0; i < page_models.length; i++) {
                 var item = page_models[i].object
-                if (item != undefined) {
-                    if (item.id != -1) {
+                if (typeof item !== "undefined") {
+                    if (item.id !== -1) {
                         var name = item.value
                         // give tag-item some standard behaviour
                         $listItem = $('<div id="' +item.id+ '"><img src="/de.deepamehta.tags/images/tag_32.png" '
@@ -58,7 +58,7 @@
                 for (var label in enteredTags) {
                     var name = enteredTags[label]
                     var tag = getLabelContained(name, allAvailableTags)
-                    if (tag == undefined) {
+                    if (typeof tag === "undefined") {
                         var newTag = dm4c.create_topic(TAG_URI, {"dm4.tags.label": name, "dm4.tags.definition" : ""})
                         tagsToReference.push(newTag)
                     } else {
@@ -76,7 +76,7 @@
                 // returning reference to all tags
                 for (var item in tagsToReference) {
                     var topic_id = tagsToReference[item].id
-                    if (topic_id != -1) {
+                    if (topic_id !== -1) {
                         values.push(dm4c.REF_PREFIX + topic_id)
                     }
                 }
@@ -141,15 +141,15 @@
             }
 
             function getTagsSubmitted (fieldIdentifier) {
-                if ($(fieldIdentifier).val() == undefined) return undefined
+                if (typeof $(fieldIdentifier).val() === "undefined") return undefined
                 var tagline = $(fieldIdentifier).val().split( /,\s*/ )
-                if (tagline == undefined) throw new Error("Tagging field got somehow broken.. ")
+                if (typeof tagline === "undefined") throw new Error("Tagging field got somehow broken.. ")
                 var qualifiedTags = []
                 for (var i=0; i < tagline.length; i++) {
                     var tag = tagline[i]
                     // credits for the regexp go to user Bracketworks in:
                     // http://stackoverflow.com/questions/154059/how-do-you-check-for-an-empty-string-in-javascript#154068
-                    if (tag.match(/\S/) != null) { // remove empty strings
+                    if (tag.match(/\S/) !== null) { // remove empty strings
                         // remove possibly entered duplicates from submitted tags
                         var qualified = true
                         for (var k=0; k < qualifiedTags.length; k++) {

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -18,8 +17,7 @@ import javax.ws.rs.WebApplicationException;
 import de.deepamehta.core.Topic;
 import de.deepamehta.core.model.TopicModel;
 import de.deepamehta.core.RelatedTopic;
-import de.deepamehta.core.model.CompositeValueModel;
-import de.deepamehta.core.service.ClientState;
+import de.deepamehta.core.model.ChildTopicsModel;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -82,12 +80,12 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     @Produces("application/json")
     @Override
     public ResultList<RelatedTopic> getTopicsByTagAndTypeURI(@PathParam("tagId") long tagId,
-        @PathParam("relatedTypeUri") String relatedTopicTypeUri, @HeaderParam("Cookie") ClientState clientState) {
+        @PathParam("relatedTypeUri") String relatedTopicTypeUri) {
         ResultList<RelatedTopic> all_results = null;
         try {
-            Topic givenTag = dms.getTopic(tagId, true);
+            Topic givenTag = dms.getTopic(tagId);
             all_results = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI,
-                    PARENT_URI, relatedTopicTypeUri, true, false, 0);
+                    PARENT_URI, relatedTopicTypeUri, 0);
             return all_results;
         } catch (Exception e) {
             throw new WebApplicationException(new RuntimeException("Something went wrong fetching tagged topics", e));
@@ -109,7 +107,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     @Produces("application/json")
     @Override
     public ResultList<RelatedTopic> getTopicsByTagsAndTypeUri(String tags, @PathParam("relatedTypeUri")
-            String relatedTopicTypeUri, @HeaderParam("Cookie") ClientState clientState) {
+            String relatedTopicTypeUri) {
         ResultList<RelatedTopic> result = null;
         try {
             JSONObject tagList = new JSONObject(tags);
@@ -120,9 +118,9 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                     // 2) fetching all topics related to the very first tag given
                     JSONObject tagOne = all_tags.getJSONObject(0);
                     long first_id = tagOne.getLong("id");
-                    Topic givenTag = dms.getTopic(first_id, true);
+                    Topic givenTag = dms.getTopic(first_id);
                     result = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI, PARENT_URI,
-                            relatedTopicTypeUri, true, false, 0);
+                            relatedTopicTypeUri, 0);
                     // 3) Iterate over all topics tagged with this (one) tag
                     Set<RelatedTopic> missmatches = new LinkedHashSet<RelatedTopic>();
                     Iterator<RelatedTopic> iterator = result.iterator();
@@ -155,7 +153,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                     // fixme: tags-array may contain < 0 items
                     JSONObject tagOne = all_tags.getJSONObject(0);
                     long first_id = tagOne.getLong("id");
-                    return getTopicsByTagAndTypeURI(first_id, relatedTopicTypeUri, clientState); // and pass it on
+                    return getTopicsByTagAndTypeURI(first_id, relatedTopicTypeUri); // and pass it on
                 }
             }
             throw new WebApplicationException(new RuntimeException("no tags given"));
@@ -180,22 +178,22 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
             // 1) Fetch Resultset of Resources
             log.info("Counting all related topics of type \"" + related_type_uri + "\"");
             ArrayList<Topic> prepared_topics = new ArrayList<Topic>();
-            ResultList<RelatedTopic> all_tags = dms.getTopics(TAG_URI, false, 0);
+            ResultList<RelatedTopic> all_tags = dms.getTopics(TAG_URI, 0);
             log.info("Identified " + all_tags.getSize() + " tags");
             // 2) Prepare view model of each result item
             Iterator<RelatedTopic> resultset = all_tags.getItems().iterator();
             while (resultset.hasNext()) {
                 Topic in_question = resultset.next();
                 int count = in_question.getRelatedTopics(AGGREGATION, CHILD_URI, PARENT_URI,
-                        related_type_uri, false, false, 0).getSize();
+                        related_type_uri, 0).getSize();
                 enrichTopicModelAboutRelatedCount(in_question, count);
                 prepared_topics.add(in_question);
             }
             // 3) sort all result-items by the number of related-topics (of given type)
             Collections.sort(prepared_topics, new Comparator<Topic>() {
                 public int compare(Topic t1, Topic t2) {
-                    int one = t1.getCompositeValue().getInt(VIEW_RELATED_COUNT_URI);
-                    int two = t2.getCompositeValue().getInt(VIEW_RELATED_COUNT_URI);
+                    int one = t1.getChildTopics().getInt(VIEW_RELATED_COUNT_URI);
+                    int two = t2.getChildTopics().getInt(VIEW_RELATED_COUNT_URI);
                     if ( one < two ) return 1;
                     if ( one > two ) return -1;
                     return 0;
@@ -203,7 +201,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
             });
             // 4) Turn over to JSON Array and add a computed css-class (indicating the "weight" of a tag)
             for (Topic item : prepared_topics) { // 2) prepare resource items
-                enrichTopicModelAboutCSSClass(item, item.getCompositeValue().getInt(VIEW_RELATED_COUNT_URI));
+                enrichTopicModelAboutCSSClass(item, item.getChildTopics().getInt(VIEW_RELATED_COUNT_URI));
                 results.put(item.toJSON());
             }
             return results.toString();
@@ -219,12 +217,12 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     /** Private Helper Methods */
 
     private void enrichTopicModelAboutRelatedCount (Topic resource, int count) {
-        CompositeValueModel resourceModel = resource.getCompositeValue().getModel();
+        ChildTopicsModel resourceModel = resource.getChildTopics().getModel();
         resourceModel.put(VIEW_RELATED_COUNT_URI, count);
     }
 
     private void enrichTopicModelAboutCSSClass (Topic resource, int related_count) {
-        CompositeValueModel resourceModel = resource.getCompositeValue().getModel();
+        ChildTopicsModel resourceModel = resource.getChildTopics().getModel();
         String className = "few";
         if (related_count > 5) className = "some";
         if (related_count > 15) className = "quitesome";
@@ -235,7 +233,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     }
 
     private boolean hasRelatedTopicTag(RelatedTopic resource, long tagId) {
-        CompositeValueModel topicModel = resource.getCompositeValue().getModel();
+        ChildTopicsModel topicModel = resource.getChildTopics().getModel();
         if (topicModel.has(TAG_URI)) {
             List<TopicModel> tags = topicModel.getTopics(TAG_URI);
             for (int i = 0; i < tags.size(); i++) {

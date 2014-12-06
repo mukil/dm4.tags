@@ -2,8 +2,6 @@ package de.deepamehta.plugins.tags.service;
 
 
 import de.deepamehta.core.RelatedTopic;
-import de.deepamehta.core.model.TopicModel;
-import de.deepamehta.core.service.ClientState;
 import de.deepamehta.core.service.PluginService;
 import de.deepamehta.core.service.ResultList;
 
@@ -18,9 +16,9 @@ import de.deepamehta.core.service.ResultList;
 
 public interface TaggingService extends PluginService {
 
-  ResultList<RelatedTopic> getTopicsByTagAndTypeURI(long tagId, String relatedTypeUri, ClientState clientState);
+  ResultList<RelatedTopic> getTopicsByTagAndTypeURI(long tagId, String relatedTypeUri);
 
-  ResultList<RelatedTopic> getTopicsByTagsAndTypeUri(String tags, String relatedTypeUri, ClientState clientState);
+  ResultList<RelatedTopic> getTopicsByTagsAndTypeUri(String tags, String relatedTypeUri);
 
   /** Returns a String coded JSONArray with special view topics (enriched about related_count and a CSS class). */
   String getViewTagsModelWithRelatedCount(String relatedTypeUri);
