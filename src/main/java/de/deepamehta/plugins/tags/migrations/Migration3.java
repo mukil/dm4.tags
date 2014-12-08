@@ -9,13 +9,6 @@ import de.deepamehta.core.service.Migration;
 
 import java.util.logging.Logger;
 
-
-
-/**
- * This migration could be deactivated resp. modified to assign all types to the workspace of your choice.
- *
- */
-
 public class Migration3 extends Migration {
 
     private Logger logger = Logger.getLogger(getClass().getName());

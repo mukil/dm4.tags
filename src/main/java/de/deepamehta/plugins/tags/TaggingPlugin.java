@@ -18,6 +18,7 @@ import de.deepamehta.core.Topic;
 import de.deepamehta.core.model.TopicModel;
 import de.deepamehta.core.RelatedTopic;
 import de.deepamehta.core.model.ChildTopicsModel;
+import de.deepamehta.core.model.SimpleValue;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -25,6 +26,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 import de.deepamehta.core.osgi.PluginActivator;
 import de.deepamehta.core.service.ResultList;
+import de.deepamehta.core.storage.spi.DeepaMehtaTransaction;
 import de.deepamehta.plugins.tags.service.TaggingService;
 import java.util.*;
 
@@ -34,7 +36,7 @@ import java.util.*;
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
  * @website http://github.com/mukil/dm4.tags
- * @version 1.3.7 compatible with DeepaMehta 4.3
+ * @version 1.3.8 compatible with DeepaMehta 4.4
  *
  */
 
@@ -67,8 +69,8 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     /**
      * Fetches all topics of given type "aggregating" the "Tag" with the given <code>tagId</code>.
      *
-     * @param {tagId}               An id ot a "dm4.tags.tag"-Topic
-     * @param {relatedTypeUri}      A type_uri of a composite (e.g. "org.deepamehta.resources.resource")
+     * @param   tagId               An id ot a "dm4.tags.tag"-Topic
+     * @param   relatedTopicTypeUri A type_uri of a composite (e.g. "org.deepamehta.resources.resource")
      *                              which aggregates one or many "dm4.tags.tag".
      *
      * Note:                        This method provides actually no real benefit for developers familiar with the
@@ -95,10 +97,10 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     /**
      * Fetches all topics of given type "aggregating" all given "Tag"-<code>Topics</code>.
      *
-     * @param {tags}                A JSONObject containing JSONArray ("tags") of "Tag"-Topics is expected
+     * @param   tags                A JSONObject containing JSONArray ("tags") of "Tag"-Topics is expected
      *                              (e.g. { "tags": [ { "id": 1234 } ] }).
-     * @param {relatedTypeUri}      A type_uri of a composite (e.g. "org.deepamehta.resources.resource")
-     *                              which aggregates one or many "dm4.tags.tag".
+     * @param   relatedTopicTypeUri A type_uri of a composite (e.g. "org.deepamehta.resources.resource")
+     *                              which must aggregate one or many "dm4.tags.tag".
      */
 
     @POST
@@ -156,27 +158,29 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                     return getTopicsByTagAndTypeURI(first_id, relatedTopicTypeUri); // and pass it on
                 }
             }
-            throw new WebApplicationException(new RuntimeException("no tags given"));
+            throw new IllegalArgumentException("no tags given");
         } catch (JSONException ex) {
-            throw new WebApplicationException(new RuntimeException("error while parsing given parameters", ex));
-        } catch (Exception e) {
-            throw new WebApplicationException(new RuntimeException("something went wrong", e));
+            throw new RuntimeException("error while parsing given parameters", ex);
+        } catch (WebApplicationException e) {
+            throw new RuntimeException("something went wrong", e);
         }
     }
 
     /**
      * Getting {"value", "type_uri", "id" and "related_count:"} values of (interesting) topics in range.
+     * 
+     * @param   relatedTopicTypeUri Type URI of related Topic Type
      */
 
     @GET
     @Path("/with_related_count/{related_type_uri}")
     @Produces("application/json")
-    public String getViewTagsModelWithRelatedCount(@PathParam("related_type_uri") String related_type_uri) {
+    public String getViewTagsModelWithRelatedCount(@PathParam("related_type_uri") String relatedTopicTypeUri) {
         //
         JSONArray results = new JSONArray();
         try {
             // 1) Fetch Resultset of Resources
-            log.info("Counting all related topics of type \"" + related_type_uri + "\"");
+            log.info("Counting all related topics of type \"" + relatedTopicTypeUri + "\"");
             ArrayList<Topic> prepared_topics = new ArrayList<Topic>();
             ResultList<RelatedTopic> all_tags = dms.getTopics(TAG_URI, 0);
             log.info("Identified " + all_tags.getSize() + " tags");
@@ -185,8 +189,8 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
             while (resultset.hasNext()) {
                 Topic in_question = resultset.next();
                 int count = in_question.getRelatedTopics(AGGREGATION, CHILD_URI, PARENT_URI,
-                        related_type_uri, 0).getSize();
-                enrichTopicModelAboutRelatedCount(in_question, count);
+                        relatedTopicTypeUri, 0).getSize();
+                enrichTopicViewModelAboutRelatedCount(in_question, count);
                 prepared_topics.add(in_question);
             }
             // 3) sort all result-items by the number of related-topics (of given type)
@@ -201,27 +205,53 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
             });
             // 4) Turn over to JSON Array and add a computed css-class (indicating the "weight" of a tag)
             for (Topic item : prepared_topics) { // 2) prepare resource items
-                enrichTopicModelAboutCSSClass(item, item.getChildTopics().getInt(VIEW_RELATED_COUNT_URI));
+                enrichTopicViewModelAboutCSSClass(item, item.getChildTopics().getInt(VIEW_RELATED_COUNT_URI));
                 results.put(item.toJSON());
             }
             return results.toString();
         } catch (Exception e) {
-            throw new WebApplicationException(new RuntimeException("something went wrong", e));
-        } finally {
-            return results.toString();
+            throw new RuntimeException("something went wrong", e);
         }
     }
 
+    @Override
+    public Topic createTagTopic(String name, String definition) {
+        Topic topic = null;
+        // 1 check for existence
+        String strippedName = name.trim();
+        Topic existingTag = dms.getTopic(TAG_LABEL_URI, new SimpleValue(strippedName));
+        if (existingTag != null) {
+            throw new IllegalArgumentException("A Tag with the name \""+name+"\" already exists - NOT CREATED");
+        }
+        // 2 create
+        DeepaMehtaTransaction tx = dms.beginTx();
+        try {
+            topic = dms.createTopic(new TopicModel(TAG_URI, new ChildTopicsModel()
+                .put(TAG_LABEL_URI, strippedName).put(TAG_DEFINITION_URI, definition)));
+            tx.success();
+        } finally {
+            tx.finish();
+        }
+        return topic;
+    }
+    
+    @Override
+    public Topic getTagTopic(String name, boolean caseSensitive) {
+        String tagName = name.trim();
+        if (caseSensitive) tagName = tagName.toLowerCase();
+        return dms.getTopic(TAG_LABEL_URI, new SimpleValue(tagName))
+            .getRelatedTopic("dm4.core.composition", "dm4.core.child", "dm4.core.parent", TAG_URI);
+    }
 
 
     /** Private Helper Methods */
 
-    private void enrichTopicModelAboutRelatedCount (Topic resource, int count) {
+    private void enrichTopicViewModelAboutRelatedCount(Topic resource, int count) {
         ChildTopicsModel resourceModel = resource.getChildTopics().getModel();
         resourceModel.put(VIEW_RELATED_COUNT_URI, count);
     }
 
-    private void enrichTopicModelAboutCSSClass (Topic resource, int related_count) {
+    private void enrichTopicViewModelAboutCSSClass(Topic resource, int related_count) {
         ChildTopicsModel resourceModel = resource.getChildTopics().getModel();
         String className = "few";
         if (related_count > 5) className = "some";
