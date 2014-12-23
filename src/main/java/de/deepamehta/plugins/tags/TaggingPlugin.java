@@ -65,7 +65,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     public static final String VIEW_CSS_CLASS_COUNT_URI = "view_css_class";
 
 
-
+    
     /**
      * Fetches all topics of given type "aggregating" the "Tag" with the given <code>tagId</code>.
      *
@@ -215,13 +215,14 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     }
 
     @Override
-    public Topic createTagTopic(String name, String definition) {
+    public Topic createTagTopic(String name, String definition, boolean lowerCase) throws IllegalArgumentException {
         Topic topic = null;
         // 1 check for existence
         String strippedName = name.trim();
+        if (lowerCase) strippedName = name.toLowerCase();
         Topic existingTag = dms.getTopic(TAG_LABEL_URI, new SimpleValue(strippedName));
         if (existingTag != null) {
-            throw new IllegalArgumentException("A Tag with the name \""+name+"\" already exists - NOT CREATED");
+            throw new IllegalArgumentException("A Tag with the name \""+strippedName+"\" already exists - NOT CREATED");
         }
         // 2 create
         DeepaMehtaTransaction tx = dms.beginTx();
@@ -235,12 +236,22 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
         return topic;
     }
     
+    /** 
+     * @param   name    label of given tag
+     * @param   caseSensitive   flag if to use toLowerCase when getting
+     * @return  Topic    null if no tag with given name was found
+     */
     @Override
     public Topic getTagTopic(String name, boolean caseSensitive) {
+        Topic tagTopic = null;
         String tagName = name.trim();
-        if (caseSensitive) tagName = tagName.toLowerCase();
-        return dms.getTopic(TAG_LABEL_URI, new SimpleValue(tagName))
-            .getRelatedTopic("dm4.core.composition", "dm4.core.child", "dm4.core.parent", TAG_URI);
+        if (!caseSensitive) tagName = tagName.toLowerCase();
+        Topic labelTopic = dms.getTopic(TAG_LABEL_URI, new SimpleValue(tagName));
+        if (labelTopic != null) {
+            tagTopic = labelTopic.getRelatedTopic("dm4.core.composition", "dm4.core.child", 
+                "dm4.core.parent", TAG_URI);
+        }
+        return tagTopic;
     }
 
 

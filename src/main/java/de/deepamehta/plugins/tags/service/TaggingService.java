@@ -23,7 +23,7 @@ public interface TaggingService extends PluginService {
 
   String getViewTagsModelWithRelatedCount(String relatedTypeUri);
   
-  Topic createTagTopic(String name, String definition);
+  Topic createTagTopic(String name, String definition, boolean lowerCase);
   
   Topic getTagTopic(String name, boolean caseSensitive);
 
