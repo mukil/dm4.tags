@@ -18,6 +18,7 @@ import de.deepamehta.core.Topic;
 import de.deepamehta.core.model.TopicModel;
 import de.deepamehta.core.RelatedTopic;
 import de.deepamehta.core.model.ChildTopicsModel;
+import de.deepamehta.core.model.RelatedTopicModel;
 import de.deepamehta.core.model.SimpleValue;
 
 import org.codehaus.jettison.json.JSONArray;
@@ -25,9 +26,11 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import de.deepamehta.core.osgi.PluginActivator;
+import de.deepamehta.core.service.Inject;
 import de.deepamehta.core.service.ResultList;
 import de.deepamehta.core.storage.spi.DeepaMehtaTransaction;
 import de.deepamehta.plugins.tags.service.TaggingService;
+import de.deepamehta.plugins.workspaces.service.WorkspacesService;
 import java.util.*;
 
 
@@ -36,7 +39,7 @@ import java.util.*;
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
  * @website http://github.com/mukil/dm4.tags
- * @version 1.3.8 compatible with DeepaMehta 4.4
+ * @version 1.3.9-SNAPSHOT compatible with DeepaMehta 4.6.x
  *
  */
 
@@ -53,18 +56,13 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     private final static String PARENT_URI = "dm4.core.parent";
     private final static String AGGREGATION = "dm4.core.aggregation";
 
-    // --- Tag Type URIs
-
-    public final static String TAG_URI = "dm4.tags.tag";
-    public final static String TAG_LABEL_URI = "dm4.tags.label";
-    public final static String TAG_DEFINITION_URI = "dm4.tags.definition";
-
     // --- Additional View Model URIs
 
     public static final String VIEW_RELATED_COUNT_URI = "view_related_count";
     public static final String VIEW_CSS_CLASS_COUNT_URI = "view_css_class";
 
-
+    @Inject /** Used by Migration3 */
+    WorkspacesService workspaceService;
     
     /**
      * Fetches all topics of given type "aggregating" the "Tag" with the given <code>tagId</code>.
@@ -167,9 +165,10 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     }
 
     /**
+     * Produces some JSON data (array) to produce an interactive tag cloud.
      * Getting {"value", "type_uri", "id" and "related_count:"} values of (interesting) topics in range.
      * 
-     * @param   relatedTopicTypeUri Type URI of related Topic Type
+     * @param   relatedTopicTypeUri Type URI of related Topic Type counted.
      */
 
     @GET
@@ -276,7 +275,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     private boolean hasRelatedTopicTag(RelatedTopic resource, long tagId) {
         ChildTopicsModel topicModel = resource.getChildTopics().getModel();
         if (topicModel.has(TAG_URI)) {
-            List<TopicModel> tags = topicModel.getTopics(TAG_URI);
+            List<RelatedTopicModel> tags = topicModel.getTopics(TAG_URI);
             for (int i = 0; i < tags.size(); i++) {
                 TopicModel resourceTag = tags.get(i);
                 if (resourceTag.getId() == tagId) return true;
