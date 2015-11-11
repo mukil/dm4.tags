@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 /**
  * This migration extends existing (and new) "dm4.tags"-Installations about the new webclient renderers.
- *
  */
 public class Migration2 extends Migration {
 

@@ -16,11 +16,13 @@ import javax.ws.rs.WebApplicationException;
 
 import de.deepamehta.core.Topic;
 import de.deepamehta.core.model.TopicModel;
+import de.deepamehta.core.model.RelatedTopicModel;
 import de.deepamehta.core.RelatedTopic;
 import de.deepamehta.core.model.ChildTopicsModel;
 import de.deepamehta.core.model.RelatedTopicModel;
 import de.deepamehta.core.model.SimpleValue;
 
+import de.deepamehta.core.service.Inject;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -28,9 +30,11 @@ import org.codehaus.jettison.json.JSONObject;
 import de.deepamehta.core.osgi.PluginActivator;
 import de.deepamehta.core.service.Inject;
 import de.deepamehta.core.service.ResultList;
+import de.deepamehta.plugins.workspaces.WorkspacesService;
 import de.deepamehta.core.storage.spi.DeepaMehtaTransaction;
-import de.deepamehta.plugins.tags.service.TaggingService;
-import de.deepamehta.plugins.workspaces.service.WorkspacesService;
+import de.deepamehta.plugins.tags.TaggingService;
+import de.deepamehta.plugins.workspaces.WorkspacesService;
+
 import java.util.*;
 
 
@@ -39,13 +43,11 @@ import java.util.*;
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
  * @website http://github.com/mukil/dm4.tags
- * @version 1.3.9-SNAPSHOT compatible with DeepaMehta 4.6.x
- *
+ * @version 1.3.9-SNAPSHOT compatible with DeepaMehta 4.7
  */
 
 @Path("/tag")
 @Consumes("application/json")
-@Produces("text/html")
 public class TaggingPlugin extends PluginActivator implements TaggingService {
 
     private Logger log = Logger.getLogger(getClass().getName());
@@ -61,20 +63,21 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     public static final String VIEW_RELATED_COUNT_URI = "view_related_count";
     public static final String VIEW_CSS_CLASS_COUNT_URI = "view_css_class";
 
-    @Inject /** Used by Migration3 */
-    WorkspacesService workspaceService;
-    
+    // --- Service used in Migration3 to fix Workspace Assignments
+
+    @Inject
+    private WorkspacesService workspaceService;
+
     /**
      * Fetches all topics of given type "aggregating" the "Tag" with the given <code>tagId</code>.
+     *
+     * Note:                        This method provides actually no real benefit for developers familiar with the
+     *                              getRelatedTopics() of the deepamehta-core API. It's just a convenient call.
      *
      * @param   tagId               An id ot a "dm4.tags.tag"-Topic
      * @param   relatedTopicTypeUri A type_uri of a composite (e.g. "org.deepamehta.resources.resource")
      *                              which aggregates one or many "dm4.tags.tag".
-     *
-     * Note:                        This method provides actually no real benefit for developers familiar with the
-     *                              getRelatedTopics() of the deepamehta-core API. It's just a convenient call.
      */
-
     @GET
     @Path("/{tagId}/{relatedTypeUri}")
     @Produces("application/json")
@@ -100,7 +103,6 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
      * @param   relatedTopicTypeUri A type_uri of a composite (e.g. "org.deepamehta.resources.resource")
      *                              which must aggregate one or many "dm4.tags.tag".
      */
-
     @POST
     @Path("/by_many/{relatedTypeUri}")
     @Consumes("application/json")
@@ -170,7 +172,6 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
      * 
      * @param   relatedTopicTypeUri Type URI of related Topic Type counted.
      */
-
     @GET
     @Path("/with_related_count/{related_type_uri}")
     @Produces("application/json")
@@ -245,6 +246,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
         Topic tagTopic = null;
         String tagName = name.trim();
         if (!caseSensitive) tagName = tagName.toLowerCase();
+        // ### This getTopic-call might throw a "Unauthorized" Exception as of DM 4.7, no?
         Topic labelTopic = dms.getTopic(TAG_LABEL_URI, new SimpleValue(tagName));
         if (labelTopic != null) {
             tagTopic = labelTopic.getRelatedTopic("dm4.core.composition", "dm4.core.child", 
@@ -277,7 +279,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
         if (topicModel.has(TAG_URI)) {
             List<RelatedTopicModel> tags = topicModel.getTopics(TAG_URI);
             for (int i = 0; i < tags.size(); i++) {
-                TopicModel resourceTag = tags.get(i);
+                RelatedTopicModel resourceTag = tags.get(i);
                 if (resourceTag.getId() == tagId) return true;
             }
         }
