@@ -1,17 +1,19 @@
 
 # DeepaMehta 4 Tags Module
 
-A DeepaMehta 4 plugin realizing the use-case of tagging. This module allows users to tag topics with the help of so called "auto-completion", an input field helping authors to re-use/reference existing tags. 
+A DeepaMehta 4 plugin realizing the use-case of tagging. This module allows users to tag topics. It comes with "auto-completion", allowing you to simply create and re-use (reference existing) tags.
 
-It does so through introducing the Topic Type _Tag_ (`dm4.tags.tag`) with which one can extend any DeepaMehta 4 _Topic_- or _Association Type_ interactively. The plugin comes with a custom renderer for _many_ `Tag/s`, so make sure you configure _Tags_ to be a "Child Type" of _many_, otherwise you won't see the auto-completion GUI.
+It does so through introducing the Topic Type _Tag_ (`dm4.tags.tag`) with which one can _extend_ any DeepaMehta 4 _Topic_- or _Association Type_ interactively.
 
 ## Download & Installation
 
 You can download a bundle file for installation at [download.deepamehta.de/nightly](http://download.deepamehta.de).
 
-Place the downloaded `dm43-deepamehta-tags-1.3.7.jar`-file in the `bundles` folder of your DeepaMehta installation and restart DeepaMehta.
+Copy the downloaded `dm4x-deepamehta-tags-1.x.x.jar`-file into the `bundles` folder of your DeepaMehta installation and restart DeepaMehta.
 
 ### Configuration
+
+Note: The plugin comes with a custom renderer for _many_ `Tag/s`, so make sure you configure _Tags_ to be a "Child Type" of _many_, otherwise you won't see the auto-completion GUI.
 
 Reveal the 
 

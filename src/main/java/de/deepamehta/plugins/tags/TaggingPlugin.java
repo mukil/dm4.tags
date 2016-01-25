@@ -69,14 +69,16 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     private WorkspacesService workspaceService;
 
     /**
-     * Fetches all topics of given type "aggregating" the "Tag" with the given <code>tagId</code>.
+     * Convenience method to fetch a list of topics (of a given <code>Topic Type</code>) using the "Tag"
+     * with the given <code>topic id</code>.
      *
-     * Note:                        This method provides actually no real benefit for developers familiar with the
-     *                              getRelatedTopics() of the deepamehta-core API. It's just a convenient call.
+     * Note: This method provides no real benefit for developers familiar with the getRelatedTopics() of the
+     * deepamehta-core API. It's just a convenient call.
      *
-     * @param   tagId               An id ot a "dm4.tags.tag"-Topic
-     * @param   relatedTopicTypeUri A type_uri of a composite (e.g. "org.deepamehta.resources.resource")
-     *                              which aggregates one or many "dm4.tags.tag".
+     * @param   tagId               A topic id ot a "dm4.tags.tag"-Topic
+     * @param   relatedTopicTypeUri A Topic Type URI identifying a type of topics. The <code>Topic Type
+     *                              Definition</code> is expected to have an <code>Aggregation Definition</code> with
+     *                              cardinality set to <code>Many</code> to the Topic Type Tag (typeUri="dm4.tags.tag").
      */
     @GET
     @Path("/{tagId}/{relatedTypeUri}")
@@ -96,10 +98,11 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     }
 
     /**
-     * Fetches all topics of given type "aggregating" all given "Tag"-<code>Topics</code>.
+     * Convenience method to fetch a list of topics (of a given <code>Topic Type</code>) using a list of "Tags".
      *
-     * @param   tags                A JSONObject containing JSONArray ("tags") of "Tag"-Topics is expected
-     *                              (e.g. { "tags": [ { "id": 1234 } ] }).
+     * @param   tags                A String of a JSONObject containing a JSONArray (under the
+     *                              </code>key="tags"</code>) of "dm4.tags.tag"-Topics is expected.
+     *                              For example: <code>"{ "tags": [ { "id": 1234 } ] }"</code>).
      * @param   relatedTopicTypeUri A type_uri of a composite (e.g. "org.deepamehta.resources.resource")
      *                              which must aggregate one or many "dm4.tags.tag".
      */
@@ -167,10 +170,11 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     }
 
     /**
-     * Produces some JSON data (array) to produce an interactive tag cloud.
-     * Getting {"value", "type_uri", "id" and "related_count:"} values of (interesting) topics in range.
+     * Generate a JSONArray with properties helpful to produce an interactive tag cloud.
      * 
      * @param   relatedTopicTypeUri Type URI of related Topic Type counted.
+     * @return  String  Containing a JSON Object with some properties helpful for visualization (including CSS class
+     * names).
      */
     @GET
     @Path("/with_related_count/{related_type_uri}")
@@ -214,6 +218,17 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
         }
     }
 
+    /**
+     * Creates a topic of type "dm4.tags.tag" after checking for existence by name and trimming the name.
+     * If a tag with the given name ("dm4.tags.label") already exists, an <code>IllegalArgumentException</code> is
+     * thrown.
+     *
+     * @param name          Label of the tag.
+     * @param definition    Definition the label stands for.
+     * @param lowerCase     Do existence check after converting the given name with a <code>.toLowerCase()</code> call.
+     *
+     * @return Topic        The complete tag topic created.
+     **/
     @Override
     public Topic createTagTopic(String name, String definition, boolean lowerCase) throws IllegalArgumentException {
         Topic topic = null;
@@ -236,10 +251,12 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
         return topic;
     }
     
-    /** 
+    /**
+     * Returns a topic (typeUri="dm4.tags.tag") with the given name.
+     *
      * @param   name    label of given tag
      * @param   caseSensitive   flag if to use toLowerCase when getting
-     * @return  Topic    null if no tag with given name was found
+     * @return  Topic   The topic or <code>null</code> if no topic was found under the given name.
      */
     @Override
     public Topic getTagTopic(String name, boolean caseSensitive) {

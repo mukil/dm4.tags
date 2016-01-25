@@ -9,6 +9,10 @@ import de.deepamehta.core.service.Migration;
 
 import java.util.logging.Logger;
 
+/**
+ * This migration assigns all three topic types of this plugin to the public "DeepaMehta" Workspace.
+ * Note: Since all types start with "dm4." this should already be done (automatically). TODO: Check.
+ * */
 public class Migration3 extends Migration {
 
     @Inject
