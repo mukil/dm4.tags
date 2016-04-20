@@ -1,4 +1,4 @@
-package de.deepamehta.plugins.tags;
+package de.deepamehta.tags;
 
 
 import de.deepamehta.core.RelatedTopic;

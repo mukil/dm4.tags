@@ -1,4 +1,4 @@
-package de.deepamehta.plugins.tags;
+package de.deepamehta.tags;
 
 import java.util.logging.Logger;
 import java.util.Iterator;
@@ -37,7 +37,7 @@ import java.util.*;
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
  * @website http://github.com/mukil/dm4.tags
- * @version 1.3.9-SNAPSHOT compatible with DeepaMehta 4.7
+ * @version 1.3.10-SNAPSHOT compatible with DeepaMehta 4.8
  */
 
 @Path("/tag")

@@ -1,9 +1,9 @@
-package de.deepamehta.plugins.tags.migrations;
+package de.deepamehta.tags.migrations;
 
 import de.deepamehta.core.Topic;
 import de.deepamehta.core.TopicType;
 import de.deepamehta.core.service.Inject;
-import de.deepamehta.plugins.tags.TaggingService;
+import de.deepamehta.tags.TaggingService;
 import de.deepamehta.workspaces.WorkspacesService;
 import de.deepamehta.core.service.Migration;
 
