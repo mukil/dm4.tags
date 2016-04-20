@@ -15,25 +15,19 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 
 import de.deepamehta.core.Topic;
-import de.deepamehta.core.model.TopicModel;
-import de.deepamehta.core.model.RelatedTopicModel;
 import de.deepamehta.core.RelatedTopic;
 import de.deepamehta.core.model.ChildTopicsModel;
 import de.deepamehta.core.model.RelatedTopicModel;
 import de.deepamehta.core.model.SimpleValue;
 
-import de.deepamehta.core.service.Inject;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import de.deepamehta.core.osgi.PluginActivator;
 import de.deepamehta.core.service.Inject;
-import de.deepamehta.core.service.ResultList;
-import de.deepamehta.plugins.workspaces.WorkspacesService;
 import de.deepamehta.core.storage.spi.DeepaMehtaTransaction;
-import de.deepamehta.plugins.tags.TaggingService;
-import de.deepamehta.plugins.workspaces.WorkspacesService;
+import de.deepamehta.workspaces.WorkspacesService;
 
 import java.util.*;
 
@@ -84,13 +78,12 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     @Path("/{tagId}/{relatedTypeUri}")
     @Produces("application/json")
     @Override
-    public ResultList<RelatedTopic> getTopicsByTagAndTypeURI(@PathParam("tagId") long tagId,
+    public List<RelatedTopic> getTopicsByTagAndTypeURI(@PathParam("tagId") long tagId,
         @PathParam("relatedTypeUri") String relatedTopicTypeUri) {
-        ResultList<RelatedTopic> all_results = null;
+        List<RelatedTopic> all_results = null;
         try {
-            Topic givenTag = dms.getTopic(tagId);
-            all_results = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI,
-                    PARENT_URI, relatedTopicTypeUri, 0);
+            Topic givenTag = dm4.getTopic(tagId);
+            all_results = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI, PARENT_URI, relatedTopicTypeUri);
             return all_results;
         } catch (Exception e) {
             throw new WebApplicationException(new RuntimeException("Something went wrong fetching tagged topics", e));
@@ -111,9 +104,9 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     @Consumes("application/json")
     @Produces("application/json")
     @Override
-    public ResultList<RelatedTopic> getTopicsByTagsAndTypeUri(String tags, @PathParam("relatedTypeUri")
+    public List<RelatedTopic> getTopicsByTagsAndTypeUri(String tags, @PathParam("relatedTypeUri")
             String relatedTopicTypeUri) {
-        ResultList<RelatedTopic> result = null;
+        List<RelatedTopic> result = null;
         try {
             JSONObject tagList = new JSONObject(tags);
             if (tagList.has("tags")) {
@@ -123,9 +116,8 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                     // 2) fetching all topics related to the very first tag given
                     JSONObject tagOne = all_tags.getJSONObject(0);
                     long first_id = tagOne.getLong("id");
-                    Topic givenTag = dms.getTopic(first_id);
-                    result = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI, PARENT_URI,
-                            relatedTopicTypeUri, 0);
+                    Topic givenTag = dm4.getTopic(first_id);
+                    result = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI, PARENT_URI, relatedTopicTypeUri);
                     // 3) Iterate over all topics tagged with this (one) tag
                     Set<RelatedTopic> missmatches = new LinkedHashSet<RelatedTopic>();
                     Iterator<RelatedTopic> iterator = result.iterator();
@@ -136,7 +128,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                         for (int i=1; i < all_tags.length(); i++) {
                             JSONObject tag = all_tags.getJSONObject(i);
                             long t_id = tag.getLong("id");
-                            // Topic tag_to_check = dms.getTopic(t_id, false);
+                            // Topic tag_to_check = dm4.getTopic(t_id, false);
                             if (!hasRelatedTopicTag(resource, t_id)) { // if just one tag is missing, mark for removal
                                 missmatches.add(resource);
                                 break remove;
@@ -146,9 +138,9 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                     // 5) remove all "not-matching" items from our initial resultset
                     for (Iterator<RelatedTopic> it = missmatches.iterator(); it.hasNext();) {
                         RelatedTopic topic = it.next();
-                        result.getItems().remove(topic);
+                        result.remove(topic);
                         // 6) check if any "not-matching" items is still part of our resultset (doubling)
-                        if (result.getItems().contains(topic)) {
+                        if (result.contains(topic)) {
                             log.warning("DATA INCONSISTENCY:" + topic.getId() + " has two associations to the first "
                                 + "given-tag ("+givenTag.getSimpleValue() +")");
                         }
@@ -186,14 +178,14 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
             // 1) Fetch Resultset of Resources
             log.info("Counting all related topics of type \"" + relatedTopicTypeUri + "\"");
             ArrayList<Topic> prepared_topics = new ArrayList<Topic>();
-            ResultList<RelatedTopic> all_tags = dms.getTopics(TAG_URI, 0);
-            log.info("Identified " + all_tags.getSize() + " tags");
+            List<Topic> all_tags = dm4.getTopicsByType(TAG);
+            log.info("Identified " + all_tags.size() + " tags");
             // 2) Prepare view model of each result item
-            Iterator<RelatedTopic> resultset = all_tags.getItems().iterator();
+            Iterator<Topic> resultset = all_tags.iterator();
             while (resultset.hasNext()) {
                 Topic in_question = resultset.next();
                 int count = in_question.getRelatedTopics(AGGREGATION, CHILD_URI, PARENT_URI,
-                        relatedTopicTypeUri, 0).getSize();
+                    relatedTopicTypeUri).size();
                 enrichTopicViewModelAboutRelatedCount(in_question, count);
                 prepared_topics.add(in_question);
             }
@@ -235,15 +227,15 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
         // 1 check for existence
         String strippedName = name.trim();
         if (lowerCase) strippedName = name.toLowerCase();
-        Topic existingTag = dms.getTopic(TAG_LABEL_URI, new SimpleValue(strippedName));
+        Topic existingTag = dm4.getTopicByValue(LABEL_URI, new SimpleValue(strippedName));
         if (existingTag != null) {
             throw new IllegalArgumentException("A Tag with the name \""+strippedName+"\" already exists - NOT CREATED");
         }
         // 2 create
-        DeepaMehtaTransaction tx = dms.beginTx();
+        DeepaMehtaTransaction tx = dm4.beginTx();
         try {
-            topic = dms.createTopic(new TopicModel(TAG_URI, new ChildTopicsModel()
-                .put(TAG_LABEL_URI, strippedName).put(TAG_DEFINITION_URI, definition)));
+            topic = dm4.createTopic(mf.newTopicModel(TAG, mf.newChildTopicsModel()
+                .put(LABEL_URI, strippedName).put(DEFINITION_URI, definition)));
             tx.success();
         } finally {
             tx.finish();
@@ -264,10 +256,10 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
         String tagName = name.trim();
         if (!caseSensitive) tagName = tagName.toLowerCase();
         // ### This getTopic-call might throw a "Unauthorized" Exception as of DM 4.7, no?
-        Topic labelTopic = dms.getTopic(TAG_LABEL_URI, new SimpleValue(tagName));
+        Topic labelTopic = dm4.getTopicByValue(LABEL_URI, new SimpleValue(tagName));
         if (labelTopic != null) {
             tagTopic = labelTopic.getRelatedTopic("dm4.core.composition", "dm4.core.child", 
-                "dm4.core.parent", TAG_URI);
+                "dm4.core.parent", TAG);
         }
         return tagTopic;
     }
@@ -293,8 +285,8 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
 
     private boolean hasRelatedTopicTag(RelatedTopic resource, long tagId) {
         ChildTopicsModel topicModel = resource.getChildTopics().getModel();
-        if (topicModel.has(TAG_URI)) {
-            List<RelatedTopicModel> tags = topicModel.getTopics(TAG_URI);
+        if (topicModel.getTopicsOrNull(TAG) != null) {
+            List<? extends RelatedTopicModel> tags = topicModel.getTopics(TAG);
             for (int i = 0; i < tags.size(); i++) {
                 RelatedTopicModel resourceTag = tags.get(i);
                 if (resourceTag.getId() == tagId) return true;
