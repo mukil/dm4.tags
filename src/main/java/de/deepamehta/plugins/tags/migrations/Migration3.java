@@ -7,7 +7,6 @@ import de.deepamehta.plugins.tags.TaggingService;
 import de.deepamehta.plugins.workspaces.WorkspacesService;
 import de.deepamehta.core.service.Migration;
 
-import java.util.logging.Logger;
 
 /**
  * This migration assigns all three topic types of this plugin to the public "DeepaMehta" Workspace.
