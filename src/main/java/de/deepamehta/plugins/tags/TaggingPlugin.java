@@ -16,13 +16,11 @@ import javax.ws.rs.WebApplicationException;
 
 import de.deepamehta.core.Topic;
 import de.deepamehta.core.model.TopicModel;
-import de.deepamehta.core.model.RelatedTopicModel;
 import de.deepamehta.core.RelatedTopic;
 import de.deepamehta.core.model.ChildTopicsModel;
 import de.deepamehta.core.model.RelatedTopicModel;
 import de.deepamehta.core.model.SimpleValue;
 
-import de.deepamehta.core.service.Inject;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -30,9 +28,7 @@ import org.codehaus.jettison.json.JSONObject;
 import de.deepamehta.core.osgi.PluginActivator;
 import de.deepamehta.core.service.Inject;
 import de.deepamehta.core.service.ResultList;
-import de.deepamehta.plugins.workspaces.WorkspacesService;
 import de.deepamehta.core.storage.spi.DeepaMehtaTransaction;
-import de.deepamehta.plugins.tags.TaggingService;
 import de.deepamehta.plugins.workspaces.WorkspacesService;
 
 import java.util.*;

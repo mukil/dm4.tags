@@ -4,7 +4,6 @@ package de.deepamehta.plugins.tags;
 import de.deepamehta.core.RelatedTopic;
 import de.deepamehta.core.Topic;
 import de.deepamehta.core.service.ResultList;
-import org.codehaus.jettison.json.JSONArray;
 
 /**
  * A basic plugin-service for fetching and creating tags in DeepaMehta 4.
