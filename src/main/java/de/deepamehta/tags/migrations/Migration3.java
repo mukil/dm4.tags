@@ -2,6 +2,7 @@ package de.deepamehta.tags.migrations;
 
 import de.deepamehta.core.Topic;
 import de.deepamehta.core.TopicType;
+import de.deepamehta.core.model.IndexMode;
 import de.deepamehta.core.service.Inject;
 import de.deepamehta.tags.TaggingService;
 import de.deepamehta.workspaces.WorkspacesService;
@@ -29,6 +30,8 @@ public class Migration3 extends Migration {
         workspaceService.assignTypeToWorkspace(tagType, deepaMehtaWs.getId());
         workspaceService.assignTypeToWorkspace(tagLabelType, deepaMehtaWs.getId());
         workspaceService.assignTypeToWorkspace(tagDefinitionType, deepaMehtaWs.getId());
+
+        tagLabelType.addIndexMode(IndexMode.FULLTEXT_KEY);
 
     }
 
