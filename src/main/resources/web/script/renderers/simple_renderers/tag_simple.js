@@ -1,5 +1,5 @@
 
-dm4c.add_multi_renderer('dm4.tags.tag_simple_view', {
+dm4c.add_simple_renderer('dm4.tags.tag_simple_view', {
 
     render_info: function (page_models, $parent) {
 
