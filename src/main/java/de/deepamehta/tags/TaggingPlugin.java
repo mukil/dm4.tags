@@ -26,6 +26,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 import de.deepamehta.core.osgi.PluginActivator;
 import de.deepamehta.core.service.Inject;
+import de.deepamehta.core.service.accesscontrol.AccessControlException;
 import de.deepamehta.core.storage.spi.DeepaMehtaTransaction;
 import de.deepamehta.workspaces.WorkspacesService;
 
@@ -36,7 +37,7 @@ import java.util.*;
  * A basic plugin-service for fetching topics in DeepaMehta 4 by type and <em>one</em> or <em>many</em> tags.
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
- * @version 1.3.10-SNAPSHOT compatible with DeepaMehta 4.8
+ * @version 1.3.10 compatible with DeepaMehta 4.8
  */
 
 @Path("/tag")
@@ -72,6 +73,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
      * @param   relatedTopicTypeUri A Topic Type URI identifying a type of topics. The <code>Topic Type
      *                              Definition</code> is expected to have an <code>Aggregation Definition</code> with
      *                              cardinality set to <code>Many</code> to the Topic Type Tag (typeUri="dm4.tags.tag").
+     * @return  A list of <code>RelatedTopic</code>s of the given type (identified by typeUri) and associated with the given Tag (identified by topic id).
      */
     @GET
     @Path("/{tagId}/{relatedTypeUri}")
@@ -97,7 +99,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
      *                              For example: <code>"{ "tags": [ { "id": 1234 } ] }"</code>).
      * @param   relatedTopicTypeUri A type_uri of a composite (e.g. "org.deepamehta.resources.resource")
      *                              which must aggregate one or many "dm4.tags.tag".
-     */
+     * @return  A list of <code>RelatedTopic</code>s of the given type (identified by typeUri) and associated with a list of tags (identified by string encoded JSON Array of topic ids).     */
     @POST
     @Path("/by_many/{relatedTypeUri}")
     @Consumes("application/json")
@@ -165,7 +167,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
      * 
      * @param   relatedTopicTypeUri Type URI of related Topic Type counted.
      * @return  String  Containing a JSON Object with some properties helpful for visualization (including CSS class
-     * names).
+     * names) all tags regarding a specific topic type (identified by typeUri) which aggregates one or many tags.
      */
     @GET
     @Path("/with_related_count/{related_type_uri}")
@@ -216,7 +218,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
      *
      * @param name          Label of the tag.
      * @param definition    Definition the label stands for.
-     * @param lowerCase     Do existence check after converting the given name with a <code>.toLowerCase()</code> call.
+     * @param lowerCase     Convert given name with a <code>.toLowerCase()</code> call for the existence check.
      *
      * @return Topic        The complete tag topic created.
      **/
@@ -224,17 +226,15 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     public Topic createTagTopic(String name, String definition, boolean lowerCase) throws IllegalArgumentException {
         Topic topic = null;
         // 1 check for existence
-        String strippedName = name.trim();
-        if (lowerCase) strippedName = name.toLowerCase();
-        Topic existingTag = dm4.getTopicByValue(LABEL_URI, new SimpleValue(strippedName));
+        Topic existingTag = getTagTopic(name, true);
         if (existingTag != null) {
-            throw new IllegalArgumentException("A Tag with the name \""+strippedName+"\" already exists - NOT CREATED");
+            throw new IllegalArgumentException("A Tag with the name \""+name.trim()+"\" already exists - NOT CREATED");
         }
         // 2 create
         DeepaMehtaTransaction tx = dm4.beginTx();
         try {
             topic = dm4.createTopic(mf.newTopicModel(TAG, mf.newChildTopicsModel()
-                .put(LABEL_URI, strippedName).put(DEFINITION_URI, definition)));
+                .put(LABEL_URI, name.trim()).put(DEFINITION_URI, definition)));
             tx.success();
         } finally {
             tx.finish();
@@ -254,17 +254,38 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
         Topic tagTopic = null;
         String tagName = name.trim();
         if (!caseSensitive) tagName = tagName.toLowerCase();
-        // ### This getTopic-call might throw a "Unauthorized" Exception as of DM 4.7, no?
-        Topic labelTopic = dm4.getTopicByValue(LABEL_URI, new SimpleValue(tagName));
-        if (labelTopic != null) {
-            tagTopic = labelTopic.getRelatedTopic("dm4.core.composition", "dm4.core.child", 
-                "dm4.core.parent", TAG);
+        Topic labelTopic = null;
+        try {
+            // This getTopic-call might throw an AccessControlException wrapped into a RuntimeException
+            labelTopic = dm4.getTopicByValue(LABEL_URI, new SimpleValue(tagName));
+            if (labelTopic != null) {
+                tagTopic = labelTopic.getRelatedTopic("dm4.core.composition", "dm4.core.child", 
+                    "dm4.core.parent", TAG);
+            }
+        } catch (RuntimeException ex) {
+            if (hasNestedAccessControlException(ex)) {
+                log.warning("A Tag topic was found (value="+name+", caseSensitive="+caseSensitive+") but the requesting"
+                    + " user has no permission to access and use label ("+labelTopic+")or tag topic ("+tagTopic+") "
+                    + ex.getCause().getLocalizedMessage());
+            } else {
+                throw new RuntimeException(ex);
+            }
         }
         return tagTopic;
     }
 
 
     /** Private Helper Methods */
+
+    private boolean hasNestedAccessControlException(Throwable e) {
+        while (e != null) {
+            if (e instanceof AccessControlException) {
+                return true;
+            }
+            e = e.getCause();
+        }
+        return false;
+    }
 
     private void enrichTopicViewModelAboutRelatedCount(Topic resource, int count) {
         ChildTopicsModel resourceModel = resource.getChildTopics().getModel();
