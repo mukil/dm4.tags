@@ -52,11 +52,6 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     private final static String PARENT_URI = "dm4.core.parent";
     private final static String AGGREGATION = "dm4.core.aggregation";
 
-    // --- Additional View Model URIs
-
-    public static final String VIEW_RELATED_COUNT_URI = "view_related_count";
-    public static final String VIEW_CSS_CLASS_COUNT_URI = "view_css_class";
-
     // --- Service used in Migration3 to fix Workspace Assignments
 
     @Inject
@@ -172,40 +167,37 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     @GET
     @Path("/with_related_count/{related_type_uri}")
     @Produces("application/json")
-    public String getViewTagsModelWithRelatedCount(@PathParam("related_type_uri") String relatedTopicTypeUri) {
+    public List<TagViewModel> getViewTagsModelWithRelatedCount(@PathParam("related_type_uri") String relatedTopicTypeUri) {
         //
-        JSONArray results = new JSONArray();
         try {
             // 1) Fetch Resultset of Resources
             log.info("Counting all related topics of type \"" + relatedTopicTypeUri + "\"");
-            ArrayList<Topic> prepared_topics = new ArrayList<Topic>();
+            ArrayList<TagViewModel> result = new ArrayList<TagViewModel>();
             List<Topic> all_tags = dm4.getTopicsByType(TAG);
-            log.info("Identified " + all_tags.size() + " tags");
+            log.info("Fetching " + all_tags.size() + " tags overall"); // ### Optimize..
             // 2) Prepare view model of each result item
             Iterator<Topic> resultset = all_tags.iterator();
             while (resultset.hasNext()) {
                 Topic in_question = resultset.next();
                 int count = in_question.getRelatedTopics(AGGREGATION, CHILD_URI, PARENT_URI,
                     relatedTopicTypeUri).size();
-                enrichTopicViewModelAboutRelatedCount(in_question, count);
-                prepared_topics.add(in_question);
+                TagViewModel tagView = new TagViewModel();
+                tagView.setTopicModel(in_question);
+                tagView.setViewRelatedCount(count);
+                tagView.setViewStyleClass();
+                result.add(tagView);
             }
             // 3) sort all result-items by the number of related-topics (of given type)
-            Collections.sort(prepared_topics, new Comparator<Topic>() {
-                public int compare(Topic t1, Topic t2) {
-                    int one = t1.getChildTopics().getInt(VIEW_RELATED_COUNT_URI);
-                    int two = t2.getChildTopics().getInt(VIEW_RELATED_COUNT_URI);
+            Collections.sort(result, new Comparator<TagViewModel>() {
+                public int compare(TagViewModel t1, TagViewModel t2) {
+                    int one = t1.getViewRelatedCount();
+                    int two = t2.getViewRelatedCount();
                     if ( one < two ) return 1;
                     if ( one > two ) return -1;
                     return 0;
                 }
             });
-            // 4) Turn over to JSON Array and add a computed css-class (indicating the "weight" of a tag)
-            for (Topic item : prepared_topics) { // 2) prepare resource items
-                enrichTopicViewModelAboutCSSClass(item, item.getChildTopics().getInt(VIEW_RELATED_COUNT_URI));
-                results.put(item.toJSON());
-            }
-            return results.toString();
+            return result;
         } catch (Exception e) {
             throw new RuntimeException("something went wrong", e);
         }
@@ -285,22 +277,6 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
             e = e.getCause();
         }
         return false;
-    }
-
-    private void enrichTopicViewModelAboutRelatedCount(Topic resource, int count) {
-        ChildTopicsModel resourceModel = resource.getChildTopics().getModel();
-        resourceModel.put(VIEW_RELATED_COUNT_URI, count);
-    }
-
-    private void enrichTopicViewModelAboutCSSClass(Topic resource, int related_count) {
-        ChildTopicsModel resourceModel = resource.getChildTopics().getModel();
-        String className = "few";
-        if (related_count > 5) className = "some";
-        if (related_count > 15) className = "quitesome";
-        if (related_count > 25) className = "more";
-        if (related_count > 50) className = "many";
-        if (related_count > 70) className = "manymore";
-        resourceModel.put(VIEW_CSS_CLASS_COUNT_URI, className);
     }
 
     private boolean hasRelatedTopicTag(RelatedTopic resource, long tagId) {

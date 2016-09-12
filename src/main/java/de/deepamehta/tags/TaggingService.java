@@ -21,7 +21,7 @@ public interface TaggingService {
 
     List<RelatedTopic> getTopicsByTagsAndTypeUri(String tags, String relatedTypeUri);
 
-    String getViewTagsModelWithRelatedCount(String relatedTypeUri);
+    List<TagViewModel> getViewTagsModelWithRelatedCount(String relatedTypeUri);
 
     Topic createTagTopic(String name, String definition, boolean lowerCase);
 
