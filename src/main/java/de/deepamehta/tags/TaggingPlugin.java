@@ -167,6 +167,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     @GET
     @Path("/with_related_count/{related_type_uri}")
     @Produces("application/json")
+    @Override
     public List<TagViewModel> getViewTagsModelWithRelatedCount(@PathParam("related_type_uri") String relatedTopicTypeUri) {
         //
         try {
