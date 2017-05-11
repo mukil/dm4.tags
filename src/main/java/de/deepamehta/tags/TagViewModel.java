@@ -19,7 +19,7 @@ public class TagViewModel implements JSONEnabled {
     public static final String VIEW_CSS_CLASS_COUNT_URI = "view_css_class";
 
     JSONObject json = new JSONObject();
-    
+
     public void setTopicModel(Topic object) {
         json = object.toJSON();
     }
