@@ -18,15 +18,24 @@ public class TagViewModel implements JSONEnabled {
     public static final String VIEW_RELATED_COUNT_URI = "view_related_count";
     public static final String VIEW_CSS_CLASS_COUNT_URI = "view_css_class";
 
-    JSONObject topic = new JSONObject();
+    JSONObject json = new JSONObject();
     
     public void setTopicModel(Topic object) {
-        topic = object.toJSON();
+        json = object.toJSON();
+    }
+
+    public long getTopicId() {
+        try {
+            return json.getLong("id");
+        } catch (JSONException ex) {
+            Logger.getLogger(TagViewModel.class.getName()).log(Level.SEVERE, null, ex);
+            return -1;
+        }
     }
 
     public void setViewRelatedCount(int relatedCount) {
         try {
-            topic.put(VIEW_RELATED_COUNT_URI, relatedCount);
+            json.put(VIEW_RELATED_COUNT_URI, relatedCount);
         } catch (JSONException ex) {
             Logger.getLogger(TagViewModel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -40,7 +49,7 @@ public class TagViewModel implements JSONEnabled {
         if (getViewRelatedCount() > 50) className = "many";
         if (getViewRelatedCount() > 70) className = "manymore";
         try {
-            topic.put(VIEW_CSS_CLASS_COUNT_URI, className);
+            json.put(VIEW_CSS_CLASS_COUNT_URI, className);
         } catch (JSONException ex) {
             Logger.getLogger(TagViewModel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -48,7 +57,7 @@ public class TagViewModel implements JSONEnabled {
 
     public int getViewRelatedCount() {
         try {
-            return topic.getInt(VIEW_RELATED_COUNT_URI);
+            return json.getInt(VIEW_RELATED_COUNT_URI);
         } catch (JSONException ex) {
             Logger.getLogger(TagViewModel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -57,7 +66,7 @@ public class TagViewModel implements JSONEnabled {
 
     @Override
     public JSONObject toJSON() {
-        return topic;
+        return json;
     }
 
 }

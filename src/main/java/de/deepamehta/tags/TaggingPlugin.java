@@ -75,7 +75,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     @Produces("application/json")
     @Override
     public List<RelatedTopic> getTopicsByTagAndTypeURI(@PathParam("tagId") long tagId,
-        @PathParam("relatedTypeUri") String relatedTopicTypeUri) {
+                                                       @PathParam("relatedTypeUri") String relatedTopicTypeUri) {
         List<RelatedTopic> all_results = null;
         try {
             Topic givenTag = dm4.getTopic(tagId);
@@ -101,7 +101,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     @Produces("application/json")
     @Override
     public List<RelatedTopic> getTopicsByTagsAndTypeUri(String tags, @PathParam("relatedTypeUri")
-            String relatedTopicTypeUri) {
+                                                        String relatedTopicTypeUri) {
         List<RelatedTopic> result = null;
         try {
             JSONObject tagList = new JSONObject(tags);
@@ -167,6 +167,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     @GET
     @Path("/with_related_count/{related_type_uri}")
     @Produces("application/json")
+    @Override
     public List<TagViewModel> getViewTagsModelWithRelatedCount(@PathParam("related_type_uri") String relatedTopicTypeUri) {
         //
         try {
@@ -210,17 +211,19 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
      *
      * @param name          Label of the tag.
      * @param definition    Definition the label stands for.
-     * @param lowerCase     Convert given name with a <code>.toLowerCase()</code> call for the existence check.
+     * @param caseSensitive If false does existence check for tag applying .toLowerCase()
      *
      * @return Topic        The complete tag topic created.
      **/
     @Override
-    public Topic createTagTopic(String name, String definition, boolean lowerCase) throws IllegalArgumentException {
+    public Topic createTagTopic(String name, String definition, boolean caseSensitive) throws IllegalArgumentException {
         Topic topic = null;
         // 1 check for existence
-        Topic existingTag = getTagTopic(name, true);
+        Topic existingTag = getTagTopic(name, caseSensitive);
         if (existingTag != null) {
-            throw new IllegalArgumentException("A Tag with the name \""+name.trim()+"\" already exists - NOT CREATED");
+            // throw new IllegalArgumentException("A Tag with the name \""+name.trim()+"\" already exists - NOT CREATED");
+            log.warning("A Tag with the name \""+name.trim()+"\" already exists - NOT CREATED");
+            return existingTag;
         }
         // 2 create
         DeepaMehtaTransaction tx = dm4.beginTx();
