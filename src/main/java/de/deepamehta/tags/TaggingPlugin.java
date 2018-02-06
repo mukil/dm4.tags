@@ -37,7 +37,7 @@ import java.util.*;
  * A basic plugin-service for fetching topics in DeepaMehta 4 by type and <em>one</em> or <em>many</em> tags.
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
- * @version 1.3.10 compatible with DeepaMehta 4.8
+ * @version 1.3.11 compatible with DeepaMehta 4.9
  */
 
 @Path("/tag")

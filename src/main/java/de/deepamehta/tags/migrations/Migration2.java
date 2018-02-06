@@ -19,9 +19,9 @@ public class Migration2 extends Migration {
         // 
         TopicType tagType = dm4.getTopicType(TAG);
         ViewConfiguration viewConfig = tagType.getViewConfig();
-        viewConfig.addSetting("dm4.webclient.view_config",
+        viewConfig.setConfigValue("dm4.webclient.view_config",
                 "dm4.webclient.simple_renderer_uri", "dm4.tags.tag_simple_view");
-        viewConfig.addSetting("dm4.webclient.view_config",
+        viewConfig.setConfigValue("dm4.webclient.view_config",
                 "dm4.webclient.multi_renderer_uri", "dm4.tags.tag_multi_view");
 
     }

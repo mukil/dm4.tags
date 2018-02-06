@@ -71,14 +71,14 @@ dm4c.add_multi_renderer('dm4.tags.tag_multi_view', {
                 var element = topicTags[el].object.value
                 var elementId = topicTags[el].object.id
                 if (getMatchingTagTopic(element, resultingTags) == undefined) { // if
-                    new_model.push(dm4c.DEL_PREFIX + elementId)
+                    new_model.push(dm4c.DEL_ID_PREFIX + elementId)
                 }
             }
             // build up model containg reference to all entered tags
             for (var item in resultingTags) {
                 var topic_id = resultingTags[item].id
                 if (topic_id !== -1) {
-                    new_model.push(dm4c.REF_PREFIX + topic_id)
+                    new_model.push(dm4c.REF_ID_PREFIX + topic_id)
                 }
             }
             return new_model
@@ -92,9 +92,11 @@ dm4c.add_multi_renderer('dm4.tags.tag_multi_view', {
                 } else if (event.keyCode === $.ui.keyCode.ENTER) {
                     // fixme: event.preventDefault()
                 }
-            }).autocomplete({minLength: 0,
+            }).autocomplete({minLength: 2,
                 source: function( request, response ) {
+                    console.log("Request", request, "Term Undefined?", request.term, "AllReadable Tags", allReadableTags)
                     // delegate back to autocomplete, but extract the last term
+                    // As of 4.xx .filter throws an error...
                     response( $.ui.autocomplete.filter( allReadableTags, extractLast( request.term ) ) )
                 },
                 focus: function() {
@@ -121,7 +123,7 @@ dm4c.add_multi_renderer('dm4.tags.tag_multi_view', {
         }
 
         function fetchAllTagTopics() {
-            return dm4c.restc.get_topics(TAG_URI, false, false, 0).items
+            return dm4c.restc.get_topics(TAG_URI, false, false, 0);
         }
 
         function getMatchingTagTopic(label, listOfTagTopics) {

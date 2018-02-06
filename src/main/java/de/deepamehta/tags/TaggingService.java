@@ -9,7 +9,7 @@ import java.util.List;
  * A basic plugin-service for fetching and creating tags in DeepaMehta 4.
  *
  * @author Malte Reißig (<malte@mikromedia.de>)
- * @version 1.3.10 compatible with DeepaMehta 4.8
+ * @version 1.3.11 compatible with DeepaMehta 4.9
  */
 public interface TaggingService {
     
