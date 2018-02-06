@@ -7,7 +7,7 @@
     <name>DeepaMehta 4 Tags</name>
     <groupId>de.deepamehta</groupId>
     <artifactId>dm49-tags</artifactId>
-    <version>1.3.11</version>
+    <version>1.3.12</version>
     <packaging>bundle</packaging>
 
     <parent>
@@ -16,9 +16,9 @@
         <version>4.9</version>
     </parent>
 
-    <properties>
+    <!--properties>
         <dm4.deploy.dir>/Users/malt/Documents/dmxug/website/deepamehta-4.9/bundle-deploy</dm4.deploy.dir>
-    </properties>
+    </properties-->
 
     <dependencies>
         <dependency>

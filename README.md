@@ -71,6 +71,10 @@ The label icon used by this plugin is "Free for commercial use" (Include link to
 
 ## Version History
 
+**1.3.12**, Feb 06, 2018
+
+- Compatible with DeepaMehta 4.9
+
 **1.3.10**, Jul 26, 2016
 - Assigns types to "DeepaMehta" workspace during installation
 - Adds fulltext index to "Tag Name"
@@ -111,5 +115,5 @@ initialization of this plugin.
 - upload of binary release
 
 -------------------------------
-Author: Malte Reißig, 2012-2014
+Author: Malte Reißig, 2012-2018
 
