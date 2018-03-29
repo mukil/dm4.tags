@@ -59,7 +59,6 @@ dm4c.add_multi_renderer('dm4.tags.tag_multi_view', {
                 if (!tag) {
                     // create new topic
                     var newTag = dm4c.create_topic(TAG_URI, {"dm4.tags.label": name, "dm4.tags.definition" : ""})
-                    console.log("New Tag Topic created", newTag)
                     resultingTags.push(newTag)
                 } else {
                     // add existing topic to results
