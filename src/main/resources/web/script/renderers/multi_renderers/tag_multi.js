@@ -59,6 +59,7 @@ dm4c.add_multi_renderer('dm4.tags.tag_multi_view', {
                 if (!tag) {
                     // create new topic
                     var newTag = dm4c.create_topic(TAG_URI, {"dm4.tags.label": name, "dm4.tags.definition" : ""})
+                    console.log("New Tag Topic created", newTag)
                     resultingTags.push(newTag)
                 } else {
                     // add existing topic to results
@@ -82,7 +83,6 @@ dm4c.add_multi_renderer('dm4.tags.tag_multi_view', {
                 }
             }
             return new_model
-
         }
 
         function setupJQueryUIAutocompleteField (identifier) {
@@ -123,7 +123,8 @@ dm4c.add_multi_renderer('dm4.tags.tag_multi_view', {
         }
 
         function fetchAllTagTopics() {
-            return dm4c.restc.get_topics(TAG_URI, false, false, 0);
+            return dm4c.restc.get_topics(TAG_URI, false, false, 0)
+            return dm4c.restc.get_topics(TAG_URI, false, false, 0)
         }
 
         function getMatchingTagTopic(label, listOfTagTopics) {

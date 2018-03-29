@@ -71,6 +71,10 @@ The label icon used by this plugin is "Free for commercial use" (Include link to
 
 ## Version History
 
+**1.3.13**, Upcoming
+
+- Minor changes
+
 **1.3.12**, Feb 06, 2018
 
 - Compatible with DeepaMehta 4.9
