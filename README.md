@@ -71,9 +71,11 @@ The label icon used by this plugin is "Free for commercial use" (Include link to
 
 ## Version History
 
-**1.3.13**, Upcoming
+**1.4.0**, Mar 29, 2018
 
-- Minor changes
+- Compatibility hack-mack release
+- Removed a semicolon
+- Bumped version number
 
 **1.3.12**, Feb 06, 2018
 
