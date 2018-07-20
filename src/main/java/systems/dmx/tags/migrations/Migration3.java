@@ -1,10 +1,10 @@
-package de.deepamehta.tags.migrations;
+package systems.dmx.tags.migrations;
 
 import de.deepamehta.core.Topic;
 import de.deepamehta.core.TopicType;
 import de.deepamehta.core.model.IndexMode;
 import de.deepamehta.core.service.Inject;
-import de.deepamehta.tags.TaggingService;
+import systems.dmx.tags.TaggingService;
 import de.deepamehta.workspaces.WorkspacesService;
 import de.deepamehta.core.service.Migration;
 

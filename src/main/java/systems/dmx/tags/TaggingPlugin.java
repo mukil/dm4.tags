@@ -1,4 +1,4 @@
-package de.deepamehta.tags;
+package systems.dmx.tags;
 
 import java.util.logging.Logger;
 import java.util.Iterator;

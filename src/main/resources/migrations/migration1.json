@@ -3,11 +3,11 @@
         {
             "value": "Tag Name",
             "uri": "dm4.tags.label",
-            "data_type_uri": "dm4.core.text",
-            "index_mode_uris": ["dm4.core.fulltext", "dm4.core.key"],
-            "view_config_topics": [
+            "dataTypeUri": "dm4.core.text",
+            "indexModeUris": ["dm4.core.fulltext", "dm4.core.key"],
+            "viewConfigTopics": [
                 {
-                    "type_uri": "dm4.webclient.view_config",
+                    "typeUri": "dm4.webclient.view_config",
                     "childs": {
                         "dm4.webclient.show_in_create_menu": false,
                         "dm4.webclient.searchable_as_unit": false
@@ -18,11 +18,11 @@
         {
             "value": "Tag Definition",
             "uri": "dm4.tags.definition",
-            "data_type_uri": "dm4.core.text",
-            "index_mode_uris": ["dm4.core.fulltext"],
-            "view_config_topics": [
+            "dataTypeUri": "dm4.core.text",
+            "indexModeUris": ["dm4.core.fulltext"],
+            "viewConfigTopics": [
                 {
-                    "type_uri": "dm4.webclient.view_config",
+                    "typeUri": "dm4.webclient.view_config",
                     "childs": {
                         "dm4.webclient.show_in_create_menu": false,
                         "dm4.webclient.searchable_as_unit": false,
@@ -34,21 +34,21 @@
         {
             "value": "Tag",
             "uri": "dm4.tags.tag",
-            "data_type_uri": "dm4.core.composite",
-            "assoc_defs": [
+            "dataTypeUri": "dm4.core.identity",
+            "assocDefs": [
                 {
-                    "child_type_uri":           "dm4.tags.label",
-                    "child_cardinality_uri":    "dm4.core.one",
-                    "assoc_type_uri":           "dm4.core.composition_def"
+                    "childTypeUri":           "dm4.tags.label",
+                    "childCardinalityUri":    "dm4.core.one",
+                    "assocTypeUri":           "dm4.core.composition_def"
                 },
                 {
-                    "child_type_uri":           "dm4.tags.definition",
-                    "child_cardinality_uri":    "dm4.core.one",
-                    "assoc_type_uri":           "dm4.core.composition_def"
+                    "childTypeUri":           "dm4.tags.definition",
+                    "childCardinalityUri":    "dm4.core.one",
+                    "assocTypeUri":           "dm4.core.composition_def"
                 }
-            ], "view_config_topics": [
+            ], "viewConfigTopics": [
                 {
-                    "type_uri": "dm4.webclient.view_config",
+                    "typeUri": "dm4.webclient.view_config",
                     "childs": {
                         "dm4.webclient.icon": "/de.deepamehta.tags/images/tag_32.png",
                         "dm4.webclient.show_in_create_menu": true,

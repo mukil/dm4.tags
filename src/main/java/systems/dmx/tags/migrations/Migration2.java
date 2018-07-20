@@ -1,9 +1,9 @@
-package de.deepamehta.tags.migrations;
+package systems.dmx.tags.migrations;
 
 import de.deepamehta.core.TopicType;
 import de.deepamehta.core.ViewConfiguration;
 import de.deepamehta.core.service.Migration;
-import static de.deepamehta.tags.TaggingPlugin.TAG;
+import static systems.dmx.tags.TaggingPlugin.TAG;
 
 import java.util.logging.Logger;
 
