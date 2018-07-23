@@ -27,7 +27,7 @@ import org.codehaus.jettison.json.JSONObject;
 import de.deepamehta.core.osgi.PluginActivator;
 import de.deepamehta.core.service.Inject;
 import de.deepamehta.core.service.accesscontrol.AccessControlException;
-import de.deepamehta.core.storage.spi.DeepaMehtaTransaction;
+import de.deepamehta.core.storage.spi.DMXTransaction;
 import de.deepamehta.workspaces.WorkspacesService;
 
 import java.util.*;
@@ -226,7 +226,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
             return existingTag;
         }
         // 2 create
-        DeepaMehtaTransaction tx = dm4.beginTx();
+        DMXTransaction tx = dm4.beginTx();
         try {
             topic = dm4.createTopic(mf.newTopicModel(TAG, mf.newChildTopicsModel()
                 .put(LABEL_URI, name.trim()).put(DEFINITION_URI, definition)));
