@@ -6,25 +6,21 @@
 
     <name>DMX Tags</name>
     <groupId>systems.dmx</groupId>
-    <artifactId>dmx-tags</artifactId>
+    <artifactId>dmx-tags2</artifactId>
     <version>1.5.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <parent>
-        <groupId>de.deepamehta</groupId>
-        <artifactId>deepamehta-plugin</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <groupId>systems.dmx</groupId>
+        <artifactId>dmx-plugin</artifactId>
+        <version>5.0-beta-5</version>
     </parent>
-
-    <!--properties>
-        <dm4.deploy.dir>/Users/malt/source/dmx/dmx-platform/bundle-deploy</dm4.deploy.dir>
-    </properties-->
 
     <dependencies>
         <dependency>
-            <groupId>de.deepamehta</groupId>
-            <artifactId>deepamehta-workspaces</artifactId>
-            <version>5.0-SNAPSHOT</version>
+            <groupId>systems.dmx</groupId>
+            <artifactId>dmx-workspaces</artifactId>
+            <version>5.0-beta-5</version>
         </dependency>
     </dependencies>
 
@@ -44,10 +40,10 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>
-                            systems.dmx.tags
+                            systems.dmx.tags2
                         </Bundle-SymbolicName>
                         <Bundle-Activator>
-                            systems.dmx.tags.TaggingPlugin
+                            systems.dmx.tags2.TaggingPlugin
                         </Bundle-Activator>
                     </instructions>
                 </configuration>

@@ -1,9 +1,9 @@
-package systems.dmx.tags;
+package systems.dmx.tags2;
 
 
-import de.deepamehta.core.RelatedTopic;
-import de.deepamehta.core.Topic;
 import java.util.List;
+import systems.dmx.core.RelatedTopic;
+import systems.dmx.core.Topic;
 
 /**
  * A basic plugin-service for fetching and creating tags in DeepaMehta 4.
@@ -13,9 +13,9 @@ import java.util.List;
  */
 public interface TaggingService {
     
-    public static final String TAG = "dm4.tags.tag";
-    public static final String LABEL_URI = "dm4.tags.label";
-    public static final String DEFINITION_URI = "dm4.tags.definition";
+    public static final String TAG = "dmx.tags.tag2";
+    public static final String LABEL_URI = "dmx.tags.label";
+    public static final String DEFINITION_URI = "dmx.tags.definition";
 
     List<RelatedTopic> getTopicsByTagAndTypeURI(long tagId, String relatedTypeUri);
 

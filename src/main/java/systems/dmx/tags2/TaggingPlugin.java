@@ -1,5 +1,6 @@
-package systems.dmx.tags;
+package systems.dmx.tags2;
 
+import java.security.AccessControlException;
 import java.util.logging.Logger;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -14,23 +15,20 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 
-import de.deepamehta.core.Topic;
-import de.deepamehta.core.RelatedTopic;
-import de.deepamehta.core.model.ChildTopicsModel;
-import de.deepamehta.core.model.RelatedTopicModel;
-import de.deepamehta.core.model.SimpleValue;
-
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-import de.deepamehta.core.osgi.PluginActivator;
-import de.deepamehta.core.service.Inject;
-import de.deepamehta.core.service.accesscontrol.AccessControlException;
-import de.deepamehta.core.storage.spi.DMXTransaction;
-import de.deepamehta.workspaces.WorkspacesService;
-
 import java.util.*;
+import systems.dmx.core.RelatedTopic;
+import systems.dmx.core.Topic;
+import systems.dmx.core.model.ChildTopicsModel;
+import systems.dmx.core.model.RelatedTopicModel;
+import systems.dmx.core.model.SimpleValue;
+import systems.dmx.core.osgi.PluginActivator;
+import systems.dmx.core.service.Inject;
+import systems.dmx.core.storage.spi.DMXTransaction;
+import systems.dmx.workspaces.WorkspacesService;
 
 
 /**
@@ -48,9 +46,9 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
 
     // --- DeepaMehta Standard URIs
 
-    private final static String CHILD_URI = "dm4.core.child";
-    private final static String PARENT_URI = "dm4.core.parent";
-    private final static String AGGREGATION = "dm4.core.aggregation";
+    private final static String CHILD_URI = "dmx.core.child";
+    private final static String PARENT_URI = "dmx.core.parent";
+    private final static String AGGREGATION = "dmx.core.aggregation";
 
     // --- Service used in Migration3 to fix Workspace Assignments
 
@@ -64,10 +62,10 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
      * Note: This method provides no real benefit for developers familiar with the getRelatedTopics() of the
      * deepamehta-core API. It's just a convenient call.
      *
-     * @param   tagId               A topic id ot a "dm4.tags.tag"-Topic
+     * @param   tagId               A topic id ot a "dmx.tags.tag"-Topic
      * @param   relatedTopicTypeUri A Topic Type URI identifying a type of topics. The <code>Topic Type
      *                              Definition</code> is expected to have an <code>Aggregation Definition</code> with
-     *                              cardinality set to <code>Many</code> to the Topic Type Tag (typeUri="dm4.tags.tag").
+     *                              cardinality set to <code>Many</code> to the Topic Type Tag (typeUri="dmx.tags.tag").
      * @return  A list of <code>RelatedTopic</code>s of the given type (identified by typeUri) and associated with the given Tag (identified by topic id).
      */
     @GET
@@ -78,7 +76,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                                                        @PathParam("relatedTypeUri") String relatedTopicTypeUri) {
         List<RelatedTopic> all_results = null;
         try {
-            Topic givenTag = dm4.getTopic(tagId);
+            Topic givenTag = dmx.getTopic(tagId);
             all_results = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI, PARENT_URI, relatedTopicTypeUri);
             return all_results;
         } catch (Exception e) {
@@ -90,10 +88,10 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
      * Convenience method to fetch a list of topics (of a given <code>Topic Type</code>) using a list of "Tags".
      *
      * @param   tags                A String of a JSONObject containing a JSONArray (under the
-     *                              </code>key="tags"</code>) of "dm4.tags.tag"-Topics is expected.
+     *                              </code>key="tags"</code>) of "dmx.tags.tag"-Topics is expected.
      *                              For example: <code>"{ "tags": [ { "id": 1234 } ] }"</code>).
      * @param   relatedTopicTypeUri A type_uri of a composite (e.g. "org.deepamehta.resources.resource")
-     *                              which must aggregate one or many "dm4.tags.tag".
+     *                              which must aggregate one or many "dmx.tags.tag".
      * @return  A list of <code>RelatedTopic</code>s of the given type (identified by typeUri) and associated with a list of tags (identified by string encoded JSON Array of topic ids).     */
     @POST
     @Path("/by_many/{relatedTypeUri}")
@@ -112,7 +110,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                     // 2) fetching all topics related to the very first tag given
                     JSONObject tagOne = all_tags.getJSONObject(0);
                     long first_id = tagOne.getLong("id");
-                    Topic givenTag = dm4.getTopic(first_id);
+                    Topic givenTag = dmx.getTopic(first_id);
                     result = givenTag.getRelatedTopics(AGGREGATION, CHILD_URI, PARENT_URI, relatedTopicTypeUri);
                     // 3) Iterate over all topics tagged with this (one) tag
                     Set<RelatedTopic> missmatches = new LinkedHashSet<RelatedTopic>();
@@ -124,7 +122,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
                         for (int i=1; i < all_tags.length(); i++) {
                             JSONObject tag = all_tags.getJSONObject(i);
                             long t_id = tag.getLong("id");
-                            // Topic tag_to_check = dm4.getTopic(t_id, false);
+                            // Topic tag_to_check = dmx.getTopic(t_id, false);
                             if (!hasRelatedTopicTag(resource, t_id)) { // if just one tag is missing, mark for removal
                                 missmatches.add(resource);
                                 break remove;
@@ -174,7 +172,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
             // 1) Fetch Resultset of Resources
             log.info("Counting all related topics of type \"" + relatedTopicTypeUri + "\"");
             ArrayList<TagViewModel> result = new ArrayList<TagViewModel>();
-            List<Topic> all_tags = dm4.getTopicsByType(TAG);
+            List<Topic> all_tags = dmx.getTopicsByType(TAG);
             log.info("Fetching " + all_tags.size() + " tags overall"); // ### Optimize..
             // 2) Prepare view model of each result item
             Iterator<Topic> resultset = all_tags.iterator();
@@ -205,8 +203,8 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     }
 
     /**
-     * Creates a topic of type "dm4.tags.tag" after checking for existence by name and trimming the name.
-     * If a tag with the given name ("dm4.tags.label") already exists, an <code>IllegalArgumentException</code> is
+     * Creates a topic of type "dmx.tags.tag" after checking for existence by name and trimming the name.
+     * If a tag with the given name ("dmx.tags.label") already exists, an <code>IllegalArgumentException</code> is
      * thrown.
      *
      * @param name          Label of the tag.
@@ -226,9 +224,9 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
             return existingTag;
         }
         // 2 create
-        DMXTransaction tx = dm4.beginTx();
+        DMXTransaction tx = dmx.beginTx();
         try {
-            topic = dm4.createTopic(mf.newTopicModel(TAG, mf.newChildTopicsModel()
+            topic = dmx.createTopic(mf.newTopicModel(TAG, mf.newChildTopicsModel()
                 .put(LABEL_URI, name.trim()).put(DEFINITION_URI, definition)));
             tx.success();
         } finally {
@@ -238,7 +236,7 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
     }
     
     /**
-     * Returns a topic (typeUri="dm4.tags.tag") with the given name.
+     * Returns a topic (typeUri="dmx.tags.tag") with the given name.
      *
      * @param   name    label of given tag
      * @param   caseSensitive   flag if to use toLowerCase when getting
@@ -252,10 +250,10 @@ public class TaggingPlugin extends PluginActivator implements TaggingService {
         Topic labelTopic = null;
         try {
             // This getTopic-call might throw an AccessControlException wrapped into a RuntimeException
-            labelTopic = dm4.getTopicByValue(LABEL_URI, new SimpleValue(tagName));
+            labelTopic = dmx.getTopicByValue(LABEL_URI, new SimpleValue(tagName));
             if (labelTopic != null) {
-                tagTopic = labelTopic.getRelatedTopic("dm4.core.composition", "dm4.core.child", 
-                    "dm4.core.parent", TAG);
+                tagTopic = labelTopic.getRelatedTopic("dmx.core.composition", "dmx.core.child", 
+                    "dmx.core.parent", TAG);
             }
         } catch (RuntimeException ex) {
             if (hasNestedAccessControlException(ex)) {

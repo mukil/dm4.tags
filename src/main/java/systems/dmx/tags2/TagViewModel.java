@@ -1,11 +1,12 @@
-package systems.dmx.tags;
+package systems.dmx.tags2;
 
-import de.deepamehta.core.JSONEnabled;
-import de.deepamehta.core.Topic;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import systems.dmx.core.JSONEnabled;
+import systems.dmx.core.Topic;
 
 /**
  *

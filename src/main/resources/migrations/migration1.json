@@ -2,57 +2,35 @@
     "topic_types": [
         {
             "value": "Tag Name",
-            "uri": "dm4.tags.label",
-            "dataTypeUri": "dm4.core.text",
-            "indexModeUris": ["dm4.core.fulltext", "dm4.core.key"],
-            "viewConfigTopics": [
-                {
-                    "typeUri": "dm4.webclient.view_config",
-                    "childs": {
-                        "dm4.webclient.show_in_create_menu": false,
-                        "dm4.webclient.searchable_as_unit": false
-                    }
-                }
-            ]
+            "uri": "dmx.tags.label",
+            "dataTypeUri": "dmx.core.text"
         },
         {
             "value": "Tag Definition",
-            "uri": "dm4.tags.definition",
-            "dataTypeUri": "dm4.core.text",
-            "indexModeUris": ["dm4.core.fulltext"],
-            "viewConfigTopics": [
-                {
-                    "typeUri": "dm4.webclient.view_config",
-                    "childs": {
-                        "dm4.webclient.show_in_create_menu": false,
-                        "dm4.webclient.searchable_as_unit": false,
-                        "dm4.webclient.input_field_rows": 3
-                    }
-                }
-            ]
+            "uri": "dmx.tags.definition",
+            "dataTypeUri": "dmx.core.text"
         },
         {
             "value": "Tag",
-            "uri": "dm4.tags.tag",
-            "dataTypeUri": "dm4.core.identity",
-            "assocDefs": [
+            "uri": "dmx.tags.tag2",
+            "dataTypeUri": "dmx.core.identity",
+            "compDefs": [
                 {
-                    "childTypeUri":           "dm4.tags.label",
-                    "childCardinalityUri":    "dm4.core.one",
-                    "assocTypeUri":           "dm4.core.composition_def"
+                    "childTypeUri":           "dmx.tags.label",
+                    "childCardinalityUri":    "dmx.core.one",
+                    "isIdentityAttr":         true
                 },
                 {
-                    "childTypeUri":           "dm4.tags.definition",
-                    "childCardinalityUri":    "dm4.core.one",
-                    "assocTypeUri":           "dm4.core.composition_def"
+                    "childTypeUri":           "dmx.tags.definition",
+                    "childCardinalityUri":    "dmx.core.one"
                 }
-            ], "viewConfigTopics": [
+            ],
+            "viewConfigTopics": [
                 {
-                    "typeUri": "dm4.webclient.view_config",
-                    "childs": {
-                        "dm4.webclient.icon": "/de.deepamehta.tags/images/tag_32.png",
-                        "dm4.webclient.show_in_create_menu": true,
-                        "dm4.webclient.searchable_as_unit": true
+                    "typeUri": "dmx.webclient.view_config",
+                    "children": {
+                        "dmx.webclient.icon": "\uf02b",
+                        "dmx.webclient.show_in_create_menu": true
                     }
                 }
             ]
